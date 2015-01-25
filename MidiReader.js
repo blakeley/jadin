@@ -19,5 +19,17 @@ MidiReader.prototype.readLength = function() {
   return result;
 }
 
+MidiReader.prototype.readChunk = function(){
+  var type = this.read(4);
+  var length = this.readLength();
+  var data = this.read(length);
+  return {
+    type: type,
+    length: length,
+    data: data,
+  };
+};
+
+
 
 module.exports = MidiReader;

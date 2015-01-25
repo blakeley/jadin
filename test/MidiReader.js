@@ -27,5 +27,14 @@ describe('MidiReader', function(){
     expect(cScaleMidiReader.position).to.equal(8)
   });
 
+  it('#readChunk should read a MIDI "chunk"', function(){
+    cScaleMidiReader.position = 0;
+    chunk = cScaleMidiReader.readChunk()
+    expect(chunk.type).to.equal('MThd');
+    expect(chunk.length).to.equal(6);
+    expect(chunk.data).to.equal('\u0000\u0001\u0000\u0002\u0000`');
+    expect(cScaleMidiReader.position).to.equal(14)
+  })
+
 })
 
