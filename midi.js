@@ -1,8 +1,5 @@
-var INFINITY = 'infinity';
-
-function foo() {
-    return 'bar';
+function Midi(stream) {
+  this.stream = stream;
 }
 
-exports.INFINITY = INFINITY
-exports.foo = foo
+module.exports = Midi;
