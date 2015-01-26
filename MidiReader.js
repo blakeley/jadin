@@ -14,7 +14,7 @@ MidiReader.prototype.readLength = function() {
     (this.data.charCodeAt(this.position    ) << 24) +
     (this.data.charCodeAt(this.position + 1) << 16) +
     (this.data.charCodeAt(this.position + 2) <<  8) +
-    (this.data.charCodeAt(this.position + 3)      ) ); 
+    (this.data.charCodeAt(this.position + 3)      ) );
   this.position += 4;
   return result;
 }
@@ -29,6 +29,14 @@ MidiReader.prototype.readChunk = function(){
     data: data,
   };
 };
+
+MidiReader.prototype.readValue = function(){
+  var result = (
+    (this.data.charCodeAt(this.position    ) <<  8) +
+    (this.data.charCodeAt(this.position + 1)      ) );
+  this.position += 2;
+  return result;
+}
 
 MidiReader.prototype.isAtEndOfFile = function(){
   return this.position >= this.data.length;

@@ -20,10 +20,17 @@ describe('MidiReader', function(){
     expect(cScaleMidiReader.position).to.equal(4);
   });
 
-  it('#readLength should read the next 4 bytes as a 32-bit MSB-first binary number', function(){
+  it('#readLength should read the next 4 bytes as a 32-bit big-endian binary number', function(){
     cScaleMidiReader.position = 4
     expect(cScaleMidiReader.readLength()).to.equal(6);
     expect(cScaleMidiReader.position).to.equal(8)
+  });
+
+  it('#readValue should read the next 2 bytes as a 16-bit big-endian binary number', function(){
+    cScaleMidiReader.position = 8
+    expect(cScaleMidiReader.readValue()).to.equal(1);
+    expect(cScaleMidiReader.readValue()).to.equal(2);
+    expect(cScaleMidiReader.readValue()).to.equal(96);
   });
 
   it('#readChunk should read a MIDI "chunk"', function(){
