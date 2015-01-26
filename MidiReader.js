@@ -30,6 +30,8 @@ MidiReader.prototype.readChunk = function(){
   };
 };
 
-
+MidiReader.prototype.isAtEndOfFile = function(){
+  return this.position >= this.data.length;
+}
 
 module.exports = MidiReader;
