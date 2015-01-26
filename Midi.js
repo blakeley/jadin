@@ -1,7 +1,13 @@
 var MidiReader = require('./MidiReader');
 
 function Midi(data) {
-  this.reader = new MidiReader(data);
+  var reader = new MidiReader(data);
+
+  var headerChunk = reader.readChunk();
+  var headerReader = new MidiReader(headerChunk.data);
+  this.format = headerReader.readValue();
+  
+
 };
 
 module.exports = Midi;
