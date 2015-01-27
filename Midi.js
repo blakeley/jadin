@@ -5,9 +5,9 @@ function Midi(data) {
 
   var headerChunk = reader.readChunk();
   var headerReader = new MidiReader(headerChunk.data);
-  this.format = headerReader.readValue();
-  var numberOfTracks = headerReader.readValue();
-  this.ppqn = headerReader.readValue(); // assumes metrical timing
+  this.format = headerReader.readInt16();
+  var numberOfTracks = headerReader.readInt16();
+  this.ppqn = headerReader.readInt16(); // assumes metrical timing
   
 
 };

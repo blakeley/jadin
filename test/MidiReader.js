@@ -20,17 +20,27 @@ describe('MidiReader', function(){
     expect(cScaleMidiReader.position).to.equal(4);
   });
 
-  it('#readLength should read the next 4 bytes as a 32-bit big-endian binary number', function(){
-    cScaleMidiReader.position = 4
-    expect(cScaleMidiReader.readLength()).to.equal(6);
-    expect(cScaleMidiReader.position).to.equal(8)
+  it('#readInt8 should read an 8-bit integer', function(){
+    header = cScaleMidiReader.readChunk();
+    track1 = cScaleMidiReader.readChunk();
+    track1Reader = new MidiReader(track1.data);
+    expect(track1Reader.readInt8()).to.equal(0);
+    track2 = cScaleMidiReader.readChunk();
+    track2Reader = new MidiReader(track2.data);
+    expect(track2Reader.readInt8()).to.equal(0);
   });
 
-  it('#readValue should read the next 2 bytes as a 16-bit big-endian binary number', function(){
+  it('#readInt16 should read the next 2 bytes as a 16-bit big-endian binary number', function(){
     cScaleMidiReader.position = 8
-    expect(cScaleMidiReader.readValue()).to.equal(1);
-    expect(cScaleMidiReader.readValue()).to.equal(2);
-    expect(cScaleMidiReader.readValue()).to.equal(96);
+    expect(cScaleMidiReader.readInt16()).to.equal(1);
+    expect(cScaleMidiReader.readInt16()).to.equal(2);
+    expect(cScaleMidiReader.readInt16()).to.equal(96);
+  });
+
+  it('#readInt32 should read the next 4 bytes as a 32-bit big-endian binary number', function(){
+    cScaleMidiReader.position = 4
+    expect(cScaleMidiReader.readInt32()).to.equal(6);
+    expect(cScaleMidiReader.position).to.equal(8)
   });
 
   it('#readChunk should read a MIDI "chunk"', function(){
@@ -47,7 +57,6 @@ describe('MidiReader', function(){
     expect(cScaleMidiReader.isAtEndOfFile()).to.equal(false);
     track1 = cScaleMidiReader.readChunk();
     expect(cScaleMidiReader.isAtEndOfFile()).to.equal(false);
-
   });
 
   it('#isAtEndOfFile should return true after reading the entire file', function(){
@@ -56,8 +65,8 @@ describe('MidiReader', function(){
     track2 = cScaleMidiReader.readChunk();
     expect(cScaleMidiReader.isAtEndOfFile()).to.equal(true);
   });
-
-
-
 })
 
+
+
+  
