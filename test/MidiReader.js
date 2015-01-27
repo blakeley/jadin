@@ -3,47 +3,49 @@ var expect = require('chai').expect;
 var fs = require('fs');
 
 var cScaleData = fs.readFileSync('fixtures/c.mid', 'utf8');
-var cScaleMidiReader;
 
 describe('MidiReader', function(){
-  beforeEach(function(){
-    cScaleMidiReader = new MidiReader(cScaleData);
-  });  
-
   it('should construct a MidiReader instance', function(){
+    var cScaleMidiReader = new MidiReader(cScaleData);
     expect(cScaleMidiReader).to.not.be.null();
   });
 
   it('#read should read and return the requested number of bytes', function(){
-    result = cScaleMidiReader.read(4);
-    expect(result).to.equal('MThd');
-    expect(cScaleMidiReader.position).to.equal(4);
+    var reader = new MidiReader('MThd\u0000etc.');
+    expect(reader.read(4)).to.equal('MThd');
+    expect(reader.position).to.equal(4);
+    expect(reader.read(1)).to.equal('\u0000');
+    expect(reader.position).to.equal(5);
   });
 
-  it('#readInt8 should read an 8-bit integer', function(){
-    header = cScaleMidiReader.readChunk();
-    track1 = cScaleMidiReader.readChunk();
-    track1Reader = new MidiReader(track1.data);
-    expect(track1Reader.readInt8()).to.equal(0);
-    track2 = cScaleMidiReader.readChunk();
-    track2Reader = new MidiReader(track2.data);
-    expect(track2Reader.readInt8()).to.equal(0);
+  it('#readInt8 should read an the next byte as an 8-bit integer', function(){
+    var reader = new MidiReader('\u0000\u0001\u0002\u0003');
+    expect(reader.readInt8()).to.equal(0)
+    expect(reader.position).to.equal(1)
+    expect(reader.readInt8()).to.equal(1)
+    expect(reader.position).to.equal(2)
+    expect(reader.readInt8()).to.equal(2)
+    expect(reader.readInt8()).to.equal(3)
   });
 
   it('#readInt16 should read the next 2 bytes as a 16-bit big-endian binary number', function(){
-    cScaleMidiReader.position = 8
-    expect(cScaleMidiReader.readInt16()).to.equal(1);
-    expect(cScaleMidiReader.readInt16()).to.equal(2);
-    expect(cScaleMidiReader.readInt16()).to.equal(96);
+    var reader = new MidiReader('\u0000\u0001\u0002\u0003');
+    expect(reader.readInt16()).to.equal(1);
+    expect(reader.position).to.equal(2)
+    expect(reader.readInt16()).to.equal(2*256+3);
+    expect(reader.position).to.equal(4)
   });
 
   it('#readInt32 should read the next 4 bytes as a 32-bit big-endian binary number', function(){
-    cScaleMidiReader.position = 4
-    expect(cScaleMidiReader.readInt32()).to.equal(6);
-    expect(cScaleMidiReader.position).to.equal(8)
+    var reader = new MidiReader('\u0000\u0000\u0000\u0000\u0001\u0002\u0003\u0004');
+    expect(reader.readInt32()).to.equal(0);
+    expect(reader.position).to.equal(4)
+    expect(reader.readInt32()).to.equal(16909060);
+    expect(reader.position).to.equal(8)
   });
 
   it('#readChunk should read a MIDI "chunk"', function(){
+    var cScaleMidiReader = new MidiReader(cScaleData);
     chunk = cScaleMidiReader.readChunk()
     expect(chunk.type).to.equal('MThd');
     expect(chunk.length).to.equal(6);
@@ -52,6 +54,7 @@ describe('MidiReader', function(){
   });
 
   it('#isAtEndOfFile should return false before reading the entire file', function(){
+    var cScaleMidiReader = new MidiReader(cScaleData);
     expect(cScaleMidiReader.isAtEndOfFile()).to.equal(false);
     header = cScaleMidiReader.readChunk();
     expect(cScaleMidiReader.isAtEndOfFile()).to.equal(false);
@@ -60,6 +63,7 @@ describe('MidiReader', function(){
   });
 
   it('#isAtEndOfFile should return true after reading the entire file', function(){
+    var cScaleMidiReader = new MidiReader(cScaleData);
     header = cScaleMidiReader.readChunk();
     track1 = cScaleMidiReader.readChunk();
     track2 = cScaleMidiReader.readChunk();
