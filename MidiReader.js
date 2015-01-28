@@ -33,6 +33,19 @@ MidiReader.prototype.readInt32 = function() {
   return result;
 }
 
+MidiReader.prototype.readVLQ = function() {
+  var result = 0;
+
+  do {
+    result <<= 7;
+    octet = this.readInt8();
+    result += (octet & 0x7f);
+  } while (octet & 0x80)
+
+  return result;
+}
+
+
 MidiReader.prototype.readChunk = function(){
   var type = this.read(4);
   var length = this.readInt32();

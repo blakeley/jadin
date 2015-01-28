@@ -44,6 +44,18 @@ describe('MidiReader', function(){
     expect(reader.position).to.equal(8)
   });
 
+  it('#readVLQ should read the next variable number of bytes as a variable length quantity', function(){
+    var reader = new MidiReader('\u0000\u0008\u0081\u0000\u0086\u00c3\u0017');
+    expect(reader.readVLQ()).to.equal(0);
+    expect(reader.position).to.equal(1)
+    expect(reader.readVLQ()).to.equal(8);
+    expect(reader.position).to.equal(2)
+    expect(reader.readVLQ()).to.equal(128);
+    expect(reader.position).to.equal(4)
+    expect(reader.readVLQ()).to.equal(106903);
+    expect(reader.position).to.equal(7)
+  });
+
   it('#readChunk should read a MIDI "chunk"', function(){
     var cScaleMidiReader = new MidiReader(cScaleData);
     chunk = cScaleMidiReader.readChunk()
