@@ -11,15 +11,15 @@ describe('MidiReader', function(){
   });
 
   it('#read should read and return the requested number of bytes', function(){
-    var reader = new MidiReader('MThd\u0000etc.');
+    var reader = new MidiReader('MThd\x00etc.');
     expect(reader.read(4)).to.equal('MThd');
     expect(reader.position).to.equal(4);
-    expect(reader.read(1)).to.equal('\u0000');
+    expect(reader.read(1)).to.equal('\x00');
     expect(reader.position).to.equal(5);
   });
 
   it('#readInt8 should read an the next byte as an 8-bit integer', function(){
-    var reader = new MidiReader('\u0000\u0001\u0002\u0003');
+    var reader = new MidiReader('\x00\x01\x02\x03');
     expect(reader.readInt8()).to.equal(0)
     expect(reader.position).to.equal(1)
     expect(reader.readInt8()).to.equal(1)
@@ -29,7 +29,7 @@ describe('MidiReader', function(){
   });
 
   it('#readInt16 should read the next 2 bytes as a 16-bit big-endian binary number', function(){
-    var reader = new MidiReader('\u0000\u0001\u0002\u0003');
+    var reader = new MidiReader('\x00\x01\x02\x03');
     expect(reader.readInt16()).to.equal(1);
     expect(reader.position).to.equal(2)
     expect(reader.readInt16()).to.equal(2*256+3);
@@ -37,7 +37,7 @@ describe('MidiReader', function(){
   });
 
   it('#readInt32 should read the next 4 bytes as a 32-bit big-endian binary number', function(){
-    var reader = new MidiReader('\u0000\u0000\u0000\u0000\u0001\u0002\u0003\u0004');
+    var reader = new MidiReader('\x00\x00\x00\x00\x01\x02\x03\x04');
     expect(reader.readInt32()).to.equal(0);
     expect(reader.position).to.equal(4)
     expect(reader.readInt32()).to.equal(16909060);
@@ -45,7 +45,7 @@ describe('MidiReader', function(){
   });
 
   it('#readVLQ should read the next variable number of bytes as a variable length quantity', function(){
-    var reader = new MidiReader('\u0000\u0008\u0081\u0000\u0086\u00c3\u0017');
+    var reader = new MidiReader('\x00\x08\x81\x00\x86\xc3\x17');
     expect(reader.readVLQ()).to.equal(0);
     expect(reader.position).to.equal(1)
     expect(reader.readVLQ()).to.equal(8);
@@ -61,7 +61,7 @@ describe('MidiReader', function(){
     chunk = cScaleMidiReader.readChunk()
     expect(chunk.type).to.equal('MThd');
     expect(chunk.length).to.equal(6);
-    expect(chunk.data).to.equal('\u0000\u0001\u0000\u0002\u0000`');
+    expect(chunk.data).to.equal('\x00\x01\x00\x02\x00`');
     expect(cScaleMidiReader.position).to.equal(14)
   });
 
