@@ -70,9 +70,9 @@ MidiReader.prototype.readEvent = function() {
       event.velocity = this.readInt8();
       return event;
     case 0x09:
-      event.subtype = 'noteOn';
       event.pitch = dataByte1;
       event.velocity = this.readInt8();
+      event.subtype = (event.velocity==0 ? 'noteOff' : 'noteOn')
   }
 
 

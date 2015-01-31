@@ -101,6 +101,17 @@ describe('MidiReader', function(){
     expect(e.velocity).to.equal(52);
   });
 
+  it('#readEvent should read a noteOn event with velocity zero as a noteOff event', function(){
+    var reader = new MidiReader('\x00\x91\x3f\x00');
+    e = reader.readEvent();
+    expect(e.deltaTime).to.equal(0);
+    expect(e.type).to.equal('channel');
+    expect(e.subtype).to.equal('noteOff');
+    expect(e.channel).to.equal(1);
+    expect(e.pitch).to.equal(63);
+    expect(e.velocity).to.equal(0);
+  });
+
   it('#isAtEndOfFile should return false before reading the entire file', function(){
     var cScaleMidiReader = new MidiReader(cScaleData);
     expect(cScaleMidiReader.isAtEndOfFile()).to.equal(false);
