@@ -64,19 +64,24 @@ MidiReader.prototype.readEvent = function() {
   event.channel = statusByte & 0x0f;
   var eventSubtype = statusByte >> 4;
   switch(eventSubtype) {
-    case 0x08:
+    case 0x8:
       event.subtype = 'noteOff';
       event.pitch = dataByte1;
       event.velocity = this.readInt8();
       return event;
-    case 0x09:
+    case 0x9:
       event.pitch = dataByte1;
       event.velocity = this.readInt8();
       event.subtype = (event.velocity==0 ? 'noteOff' : 'noteOn')
+      return event;
+    case 0xa:
+      event.subtype = 'polyKeyPressure';
+      event.pitch = dataByte1;
+      event.pressure = this.readInt8();
+      return event;
   }
 
 
-  return event;
 }
 
 

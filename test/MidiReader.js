@@ -66,7 +66,7 @@ describe('MidiReader', function(){
   });
 
   it('#readEvent should read a noteOff event', function(){
-    // deltaTime, status?, 8n, note, velocity 
+    // deltaTime, 8n, pitch, velocity 
     var reader = new MidiReader('\x00\x81\x3c\x32');
     e = reader.readEvent();
     expect(e.deltaTime).to.equal(0);
@@ -90,7 +90,7 @@ describe('MidiReader', function(){
   });
 
   it('#readEvent should read a noteOn event', function(){
-    // deltaTime, status?, 9n, note, velocity
+    // deltaTime, 9n, pitch, velocity
     var reader = new MidiReader('\x00\x91\x3e\x34');
     e = reader.readEvent();
     expect(e.deltaTime).to.equal(0);
@@ -110,6 +110,18 @@ describe('MidiReader', function(){
     expect(e.channel).to.equal(1);
     expect(e.pitch).to.equal(63);
     expect(e.velocity).to.equal(0);
+  });
+
+  it('#readEvent should read a polyKeyPressure event', function(){
+    // deltaTime, an, pitch, pressure
+    var reader = new MidiReader('\x00\xa1\x40\x35');
+    e = reader.readEvent();
+    expect(e.deltaTime).to.equal(0);
+    expect(e.type).to.equal('channel');
+    expect(e.subtype).to.equal('polyKeyPressure');
+    expect(e.channel).to.equal(1);
+    expect(e.pitch).to.equal(64);
+    expect(e.pressure).to.equal(53);    
   });
 
   it('#isAtEndOfFile should return false before reading the entire file', function(){
