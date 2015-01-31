@@ -88,6 +88,10 @@ MidiReader.prototype.readEvent = function() {
       event.subtype = 'program';
       event.program = dataByte1;
       return event;
+    case 0xd:
+      event.subtype = 'channelPressure';
+      event.pressure = dataByte1;
+      return event;
   }
 
 
