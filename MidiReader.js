@@ -45,6 +45,26 @@ MidiReader.prototype.readVLQ = function() {
   return result;
 }
 
+MidiReader.prototype.readEvent = function() {
+  var event = {};
+  event.deltaTime = this.readVLQ();
+  var eventTypeByte = this.readInt8();
+  // assume channel event
+  event.type = "channel";
+  event.channel = eventTypeByte & 0x0f;
+  var eventSubtype = eventTypeByte >> 4;
+  switch(eventSubtype) {
+    case 0x08:
+      event.subtype = 'noteOff';
+      event.pitch = this.readInt8();
+      event.velocity = this.readInt8();
+      return event;
+  }
+
+
+  return event;
+}
+
 
 MidiReader.prototype.readChunk = function(){
   var type = this.read(4);

@@ -58,12 +58,24 @@ describe('MidiReader', function(){
 
   it('#readChunk should read a MIDI "chunk"', function(){
     var cScaleMidiReader = new MidiReader(cScaleData);
-    chunk = cScaleMidiReader.readChunk()
+    chunk = cScaleMidiReader.readChunk();
     expect(chunk.type).to.equal('MThd');
     expect(chunk.length).to.equal(6);
     expect(chunk.data).to.equal('\x00\x01\x00\x02\x00`');
     expect(cScaleMidiReader.position).to.equal(14)
   });
+
+  it('#readEvent should read a noteOff event', function(){
+    // deltaTime, status?, 8n, note, velocity 
+    var reader = new MidiReader('\x00\x81\x3c\x32');
+    e = reader.readEvent();
+    expect(e.deltaTime).to.equal(0);
+    expect(e.type).to.equal('channel');
+    expect(e.subtype).to.equal('noteOff');
+    expect(e.channel).to.equal(1);
+    expect(e.pitch).to.equal(60);
+    expect(e.velocity).to.equal(50);
+  })
 
   it('#isAtEndOfFile should return false before reading the entire file', function(){
     var cScaleMidiReader = new MidiReader(cScaleData);
