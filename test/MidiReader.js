@@ -75,7 +75,19 @@ describe('MidiReader', function(){
     expect(e.channel).to.equal(1);
     expect(e.pitch).to.equal(60);
     expect(e.velocity).to.equal(50);
-  })
+  });
+
+  it('#readEvent should read a noteOff event during a running status', function(){
+    var reader = new MidiReader('\x00\x81\x3c\x32\x01\x3d\x33');
+    reader.readEvent();
+    e = reader.readEvent();
+    expect(e.deltaTime).to.equal(1);
+    expect(e.type).to.equal('channel');
+    expect(e.subtype).to.equal('noteOff');
+    expect(e.channel).to.equal(1);
+    expect(e.pitch).to.equal(61);
+    expect(e.velocity).to.equal(51);
+  });
 
   it('#isAtEndOfFile should return false before reading the entire file', function(){
     var cScaleMidiReader = new MidiReader(cScaleData);

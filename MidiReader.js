@@ -48,15 +48,25 @@ MidiReader.prototype.readVLQ = function() {
 MidiReader.prototype.readEvent = function() {
   var event = {};
   event.deltaTime = this.readVLQ();
-  var eventTypeByte = this.readInt8();
-  // assume channel event
+  var firstByte = this.readInt8();
+
+  var statusByte, dataByte1;
+  if(firstByte < 0x80){ // running status; first byte is the first data byte
+    dataByte1 = firstByte;
+    statusByte = this.lastStatusByte; 
+  } else { // new status; first byte is the status byte
+    dataByte1 = this.readInt8();
+    statusByte = firstByte;
+    this.lastStatusByte = statusByte;
+  }
+
   event.type = "channel";
-  event.channel = eventTypeByte & 0x0f;
-  var eventSubtype = eventTypeByte >> 4;
+  event.channel = statusByte & 0x0f;
+  var eventSubtype = statusByte >> 4;
   switch(eventSubtype) {
     case 0x08:
       event.subtype = 'noteOff';
-      event.pitch = this.readInt8();
+      event.pitch = dataByte1;
       event.velocity = this.readInt8();
       return event;
   }
