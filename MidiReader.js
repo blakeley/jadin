@@ -75,9 +75,14 @@ MidiReader.prototype.readEvent = function() {
       event.subtype = (event.velocity==0 ? 'noteOff' : 'noteOn')
       return event;
     case 0xa:
-      event.subtype = 'polyKeyPressure';
+      event.subtype = 'aftertouch';
       event.pitch = dataByte1;
       event.pressure = this.readInt8();
+      return event;
+    case 0xb:
+      event.subtype = 'controller';
+      event.controller = dataByte1;
+      event.value = this.readInt8();
       return event;
   }
 

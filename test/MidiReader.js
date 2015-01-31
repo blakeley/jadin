@@ -112,16 +112,27 @@ describe('MidiReader', function(){
     expect(e.velocity).to.equal(0);
   });
 
-  it('#readEvent should read a polyKeyPressure event', function(){
+  it('#readEvent should read an aftertouch event', function(){
     // deltaTime, an, pitch, pressure
     var reader = new MidiReader('\x00\xa1\x40\x35');
     e = reader.readEvent();
     expect(e.deltaTime).to.equal(0);
     expect(e.type).to.equal('channel');
-    expect(e.subtype).to.equal('polyKeyPressure');
+    expect(e.subtype).to.equal('aftertouch');
     expect(e.channel).to.equal(1);
     expect(e.pitch).to.equal(64);
     expect(e.pressure).to.equal(53);    
+  });
+
+  it('#readEvent should read a controller event', function(){
+    // deltaTime, bn, controller, value
+    var reader = new MidiReader('\x00\xb1\x41\x36');
+    e = reader.readEvent();
+    expect(e.deltaTime).to.equal(0);
+    expect(e.type).to.equal('channel');
+    expect(e.subtype).to.equal('controller');
+    expect(e.controller).to.equal(65);
+    expect(e.value).to.equal(54);
   });
 
   it('#isAtEndOfFile should return false before reading the entire file', function(){
