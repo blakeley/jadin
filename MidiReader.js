@@ -92,6 +92,10 @@ MidiReader.prototype.readEvent = function() {
       event.subtype = 'channelPressure';
       event.pressure = dataByte1;
       return event;
+    case 0xe:
+      event.subtype = 'pitchBend';
+      event.value = (this.readInt8() << 7) + dataByte1
+      return event;
   }
 
 

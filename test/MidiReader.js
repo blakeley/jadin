@@ -155,6 +155,26 @@ describe('MidiReader', function(){
     expect(e.pressure).to.equal(67);
   });
 
+  it('#readEvent should read a channelPressure event', function(){
+    // deltaTime, dn, pressure
+    var reader = new MidiReader('\x00\xd1\x43');
+    e = reader.readEvent();
+    expect(e.deltaTime).to.equal(0);
+    expect(e.type).to.equal('channel');
+    expect(e.subtype).to.equal('channelPressure');
+    expect(e.pressure).to.equal(67);
+  });
+
+  it('#readEvent should read a pitchBend event', function(){
+    // deltaTime, en, lsb, msb
+    var reader = new MidiReader('\x00\xe1\x05\x03');
+    e = reader.readEvent();
+    expect(e.deltaTime).to.equal(0);
+    expect(e.type).to.equal('channel');
+    expect(e.subtype).to.equal('pitchBend');
+    expect(e.value).to.equal(389);    
+  });
+
   it('#isAtEndOfFile should return false before reading the entire file', function(){
     var cScaleMidiReader = new MidiReader(cScaleData);
     expect(cScaleMidiReader.isAtEndOfFile()).to.equal(false);
