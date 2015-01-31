@@ -84,6 +84,10 @@ MidiReader.prototype.readEvent = function() {
       event.controller = dataByte1;
       event.value = this.readInt8();
       return event;
+    case 0xc:
+      event.subtype = 'program';
+      event.program = dataByte1;
+      return event;
   }
 
 

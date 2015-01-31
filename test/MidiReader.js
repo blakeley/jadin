@@ -135,6 +135,16 @@ describe('MidiReader', function(){
     expect(e.value).to.equal(54);
   });
 
+  it('#readEvent should read a program event', function(){
+    // deltaTime, cn, program
+    var reader = new MidiReader('\x00\xc1\x42');
+    e = reader.readEvent();
+    expect(e.deltaTime).to.equal(0);
+    expect(e.type).to.equal('channel');
+    expect(e.subtype).to.equal('program');
+    expect(e.program).to.equal(66);
+  });
+
   it('#isAtEndOfFile should return false before reading the entire file', function(){
     var cScaleMidiReader = new MidiReader(cScaleData);
     expect(cScaleMidiReader.isAtEndOfFile()).to.equal(false);
