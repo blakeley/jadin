@@ -88,6 +88,10 @@ MidiReader.prototype.readEvent = function() {
         event.subtype = 'cuePoint';
         event.text = this.read(length);
         return event;
+      case 0x08:
+        event.subtype = 'programName';
+        event.text = this.read(length);
+        return event;
 
     }
 
