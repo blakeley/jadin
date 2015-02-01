@@ -220,6 +220,15 @@ describe('MidiReader', function(){
     expect(e.text).to.equal('Cowbell');
   });
 
+  it('#readEvent should read a lyric meta event', function(){
+    var reader = new MidiReader('\x00\xff\x05\x04hey!');
+    e = reader.readEvent();
+    expect(e.deltaTime).to.equal(0);
+    expect(e.type).to.equal('meta');
+    expect(e.subtype).to.equal('lyric');
+    expect(e.text).to.equal('hey!');    
+  });
+
   it('#isAtEndOfFile should return false before reading the entire file', function(){
     var cScaleMidiReader = new MidiReader(cScaleData);
     expect(cScaleMidiReader.isAtEndOfFile()).to.equal(false);

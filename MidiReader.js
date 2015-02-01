@@ -76,6 +76,10 @@ MidiReader.prototype.readEvent = function() {
         event.subtype = 'instrumentName';
         event.text = this.read(length);
         return event;
+      case 0x05:
+        event.subtype = 'lyric';
+        event.text = this.read(length);
+        return event;
 
     }
 
