@@ -80,6 +80,10 @@ MidiReader.prototype.readEvent = function() {
         event.subtype = 'lyric';
         event.text = this.read(length);
         return event;
+      case 0x06:
+        event.subtype = 'marker';
+        event.text = this.read(length);
+        return event;
 
     }
 

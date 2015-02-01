@@ -226,7 +226,16 @@ describe('MidiReader', function(){
     expect(e.deltaTime).to.equal(0);
     expect(e.type).to.equal('meta');
     expect(e.subtype).to.equal('lyric');
-    expect(e.text).to.equal('hey!');    
+    expect(e.text).to.equal('hey!');
+  });
+
+  it('#readEvent should read a marker meta event', function(){
+    var reader = new MidiReader('\x00\xff\x06\x05Verse');
+    e = reader.readEvent();
+    expect(e.deltaTime).to.equal(0);
+    expect(e.type).to.equal('meta');
+    expect(e.subtype).to.equal('marker');
+    expect(e.text).to.equal('Verse');
   });
 
   it('#isAtEndOfFile should return false before reading the entire file', function(){
