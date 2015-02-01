@@ -65,6 +65,23 @@ describe('MidiReader', function(){
     expect(cScaleMidiReader.position).to.equal(14)
   });
 
+  it('#isAtEndOfFile should return false before reading the entire file', function(){
+    var cScaleMidiReader = new MidiReader(cScaleData);
+    expect(cScaleMidiReader.isAtEndOfFile()).to.equal(false);
+    header = cScaleMidiReader.readChunk();
+    expect(cScaleMidiReader.isAtEndOfFile()).to.equal(false);
+    track1 = cScaleMidiReader.readChunk();
+    expect(cScaleMidiReader.isAtEndOfFile()).to.equal(false);
+  });
+
+  it('#isAtEndOfFile should return true after reading the entire file', function(){
+    var cScaleMidiReader = new MidiReader(cScaleData);
+    header = cScaleMidiReader.readChunk();
+    track1 = cScaleMidiReader.readChunk();
+    track2 = cScaleMidiReader.readChunk();
+    expect(cScaleMidiReader.isAtEndOfFile()).to.equal(true);
+  });
+
   it('#readEvent should read a noteOff event', function(){
     // deltaTime, 8n, pitch, velocity 
     var reader = new MidiReader('\x00\x81\x3c\x32');
@@ -253,7 +270,7 @@ describe('MidiReader', function(){
     expect(e.deltaTime).to.equal(0);
     expect(e.type).to.equal('meta');
     expect(e.subtype).to.equal('programName');
-    expect(e.text).to.equal('drum kit');    
+    expect(e.text).to.equal('drum kit');
   });
 
   it('#readEvent should read a deviceName meta event', function(){
@@ -262,27 +279,29 @@ describe('MidiReader', function(){
     expect(e.deltaTime).to.equal(0);
     expect(e.type).to.equal('meta');
     expect(e.subtype).to.equal('deviceName');
-    expect(e.text).to.equal('Casio');    
+    expect(e.text).to.equal('Casio');
   });
 
-  it('#isAtEndOfFile should return false before reading the entire file', function(){
-    var cScaleMidiReader = new MidiReader(cScaleData);
-    expect(cScaleMidiReader.isAtEndOfFile()).to.equal(false);
-    header = cScaleMidiReader.readChunk();
-    expect(cScaleMidiReader.isAtEndOfFile()).to.equal(false);
-    track1 = cScaleMidiReader.readChunk();
-    expect(cScaleMidiReader.isAtEndOfFile()).to.equal(false);
+  it('#readEvent should read a channelPrefix meta event', function(){
+    var reader = new MidiReader('\x00\xff\x20\x01\x02');
+    e = reader.readEvent();
+    expect(e.deltaTime).to.equal(0);
+    expect(e.type).to.equal('meta');
+    expect(e.subtype).to.equal('channelPrefix');
+    expect(e.text).to.equal(2);
   });
 
-  it('#isAtEndOfFile should return true after reading the entire file', function(){
-    var cScaleMidiReader = new MidiReader(cScaleData);
-    header = cScaleMidiReader.readChunk();
-    track1 = cScaleMidiReader.readChunk();
-    track2 = cScaleMidiReader.readChunk();
-    expect(cScaleMidiReader.isAtEndOfFile()).to.equal(true);
+  it('#readEvent should read an endOfTrack meta event', function(){
+    var reader = new MidiReader('\x00\xff\x2f\x00');
+    e = reader.readEvent();
+    expect(e.deltaTime).to.equal(0);
+    expect(e.type).to.equal('meta');
+    expect(e.subtype).to.equal('endOfTrack');
   });
+
 })
 
 
 
-  
+
+
