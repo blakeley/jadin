@@ -175,6 +175,15 @@ describe('MidiReader', function(){
     expect(e.value).to.equal(389);    
   });
 
+  it('#readEvent should read a sequence number meta event', function(){
+    var reader = new MidiReader('\x00\xff\x00\x02\x01\x03')
+    e = reader.readEvent();
+    expect(e.deltaTime).to.equal(0);
+    expect(e.type).to.equal('meta');
+    expect(e.subtype).to.equal('sequenceNumber');
+    expect(e.number).to.equal(259);
+  });
+
   it('#isAtEndOfFile should return false before reading the entire file', function(){
     var cScaleMidiReader = new MidiReader(cScaleData);
     expect(cScaleMidiReader.isAtEndOfFile()).to.equal(false);

@@ -48,55 +48,72 @@ MidiReader.prototype.readVLQ = function() {
 MidiReader.prototype.readEvent = function() {
   var event = {};
   event.deltaTime = this.readVLQ();
+
   var firstByte = this.readInt8();
+  if(firstByte == 0xff){
+    event.type = 'meta';
+    var subtypeByte = this.readInt8();
+    var length = this.readVLQ();
+    switch(subtypeByte){
+      case 0x00:
+        event.subtype = 'sequenceNumber';
+        if (length != 2) throw "Length for sequenceNumber meta event must be 2, was " + length;
+        event.number = this.readInt16();
+        return event;
+    }
 
-  var statusByte, dataByte1;
-  if(firstByte < 0x80){ // running status; first byte is the first data byte
-    dataByte1 = firstByte;
-    statusByte = this.lastStatusByte; 
-  } else { // new status; first byte is the status byte
-    dataByte1 = this.readInt8();
-    statusByte = firstByte;
-    this.lastStatusByte = statusByte;
+  } else {
+    event.type = 'channel';
+    var statusByte, dataByte1;
+    if(firstByte < 0x80){ // running status; first byte is the first data byte
+      dataByte1 = firstByte;
+      statusByte = this.lastStatusByte; 
+    } else { // new status; first byte is the status byte
+      dataByte1 = this.readInt8();
+      statusByte = firstByte;
+      this.lastStatusByte = statusByte;
+    }
+
+    event.channel = statusByte & 0x0f;
+    var eventSubtype = statusByte >> 4;
+    switch(eventSubtype) {
+      case 0x8:
+        event.subtype = 'noteOff';
+        event.pitch = dataByte1;
+        event.velocity = this.readInt8();
+        return event;
+      case 0x9:
+        event.pitch = dataByte1;
+        event.velocity = this.readInt8();
+        event.subtype = (event.velocity==0 ? 'noteOff' : 'noteOn')
+        return event;
+      case 0xa:
+        event.subtype = 'aftertouch';
+        event.pitch = dataByte1;
+        event.pressure = this.readInt8();
+        return event;
+      case 0xb:
+        event.subtype = 'controller';
+        event.controller = dataByte1;
+        event.value = this.readInt8();
+        return event;
+      case 0xc:
+        event.subtype = 'program';
+        event.program = dataByte1;
+        return event;
+      case 0xd:
+        event.subtype = 'channelPressure';
+        event.pressure = dataByte1;
+        return event;
+      case 0xe:
+        event.subtype = 'pitchBend';
+        event.value = (this.readInt8() << 7) + dataByte1
+        return event;
+    }    
   }
 
-  event.type = "channel";
-  event.channel = statusByte & 0x0f;
-  var eventSubtype = statusByte >> 4;
-  switch(eventSubtype) {
-    case 0x8:
-      event.subtype = 'noteOff';
-      event.pitch = dataByte1;
-      event.velocity = this.readInt8();
-      return event;
-    case 0x9:
-      event.pitch = dataByte1;
-      event.velocity = this.readInt8();
-      event.subtype = (event.velocity==0 ? 'noteOff' : 'noteOn')
-      return event;
-    case 0xa:
-      event.subtype = 'aftertouch';
-      event.pitch = dataByte1;
-      event.pressure = this.readInt8();
-      return event;
-    case 0xb:
-      event.subtype = 'controller';
-      event.controller = dataByte1;
-      event.value = this.readInt8();
-      return event;
-    case 0xc:
-      event.subtype = 'program';
-      event.program = dataByte1;
-      return event;
-    case 0xd:
-      event.subtype = 'channelPressure';
-      event.pressure = dataByte1;
-      return event;
-    case 0xe:
-      event.subtype = 'pitchBend';
-      event.value = (this.readInt8() << 7) + dataByte1
-      return event;
-  }
+
+
 
 
 }
