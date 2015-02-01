@@ -61,14 +61,17 @@ MidiReader.prototype.readEvent = function() {
         event.number = this.readInt16();
         return event;
       case 0x01:
-        event.subtype = 'text'
+        event.subtype = 'text';
         event.text = this.read(length);
         return event;
       case 0x02:
-        event.subtype = 'copyright'
+        event.subtype = 'copyright';
         event.text = this.read(length);
         return event;
-        
+      case 0x03:
+        event.subtype = 'trackName';
+        event.text = this.read(length);
+        return event;
 
     }
 

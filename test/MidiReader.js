@@ -202,6 +202,17 @@ describe('MidiReader', function(){
     expect(e.text).to.equal('© Noteriver.com');
   });
 
+  it('#readEvent should read a trackName meta event', function(){
+    var reader = new MidiReader('\x00\xff\x03\x0aTambourine');
+    e = reader.readEvent();
+    expect(e.deltaTime).to.equal(0);
+    expect(e.type).to.equal('meta');
+    expect(e.subtype).to.equal('trackName');
+    expect(e.text).to.equal('Tambourine');
+  });
+
+
+
   it('#isAtEndOfFile should return false before reading the entire file', function(){
     var cScaleMidiReader = new MidiReader(cScaleData);
     expect(cScaleMidiReader.isAtEndOfFile()).to.equal(false);
