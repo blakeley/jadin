@@ -256,6 +256,15 @@ describe('MidiReader', function(){
     expect(e.text).to.equal('drum kit');    
   });
 
+  it('#readEvent should read a deviceName meta event', function(){
+    var reader = new MidiReader('\x00\xff\x09\x05Casio');
+    e = reader.readEvent();
+    expect(e.deltaTime).to.equal(0);
+    expect(e.type).to.equal('meta');
+    expect(e.subtype).to.equal('deviceName');
+    expect(e.text).to.equal('Casio');    
+  });
+
   it('#isAtEndOfFile should return false before reading the entire file', function(){
     var cScaleMidiReader = new MidiReader(cScaleData);
     expect(cScaleMidiReader.isAtEndOfFile()).to.equal(false);

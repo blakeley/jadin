@@ -92,6 +92,10 @@ MidiReader.prototype.readEvent = function() {
         event.subtype = 'programName';
         event.text = this.read(length);
         return event;
+      case 0x09:
+        event.subtype = 'deviceName';
+        event.text = this.read(length);
+        return event;
 
     }
 
