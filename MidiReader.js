@@ -72,6 +72,10 @@ MidiReader.prototype.readEvent = function() {
         event.subtype = 'trackName';
         event.text = this.read(length);
         return event;
+      case 0x04:
+        event.subtype = 'instrumentName';
+        event.text = this.read(length);
+        return event;
 
     }
 

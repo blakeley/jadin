@@ -203,15 +203,22 @@ describe('MidiReader', function(){
   });
 
   it('#readEvent should read a trackName meta event', function(){
-    var reader = new MidiReader('\x00\xff\x03\x0aTambourine');
+    var reader = new MidiReader('\x00\xff\x03\x0eUnknown Song 1');
     e = reader.readEvent();
     expect(e.deltaTime).to.equal(0);
     expect(e.type).to.equal('meta');
     expect(e.subtype).to.equal('trackName');
-    expect(e.text).to.equal('Tambourine');
+    expect(e.text).to.equal('Unknown Song 1');
   });
 
-
+  it('#readEvent should read an instrumentName meta event', function(){
+    var reader = new MidiReader('\x00\xff\x04\x07Cowbell');
+    e = reader.readEvent();
+    expect(e.deltaTime).to.equal(0);
+    expect(e.type).to.equal('meta');
+    expect(e.subtype).to.equal('instrumentName');
+    expect(e.text).to.equal('Cowbell');
+  });
 
   it('#isAtEndOfFile should return false before reading the entire file', function(){
     var cScaleMidiReader = new MidiReader(cScaleData);
