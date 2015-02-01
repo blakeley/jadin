@@ -193,6 +193,15 @@ describe('MidiReader', function(){
     expect(e.text).to.equal('some text');
   });
 
+  it('#readEvent should read a copyright meta event', function(){
+    var reader = new MidiReader('\x00\xff\x02\x0f© Noteriver.com');
+    e = reader.readEvent();
+    expect(e.deltaTime).to.equal(0);
+    expect(e.type).to.equal('meta');
+    expect(e.subtype).to.equal('copyright');
+    expect(e.text).to.equal('© Noteriver.com');
+  });
+
   it('#isAtEndOfFile should return false before reading the entire file', function(){
     var cScaleMidiReader = new MidiReader(cScaleData);
     expect(cScaleMidiReader.isAtEndOfFile()).to.equal(false);

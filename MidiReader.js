@@ -64,6 +64,12 @@ MidiReader.prototype.readEvent = function() {
         event.subtype = 'text'
         event.text = this.read(length);
         return event;
+      case 0x02:
+        event.subtype = 'copyright'
+        event.text = this.read(length);
+        return event;
+        
+
     }
 
   } else {
