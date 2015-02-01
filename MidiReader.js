@@ -60,6 +60,10 @@ MidiReader.prototype.readEvent = function() {
         if (length != 2) throw "Length for sequenceNumber meta event must be 2, was " + length;
         event.number = this.readInt16();
         return event;
+      case 0x01:
+        event.subtype = 'text'
+        event.text = this.read(length);
+        return event;
     }
 
   } else {

@@ -175,13 +175,22 @@ describe('MidiReader', function(){
     expect(e.value).to.equal(389);    
   });
 
-  it('#readEvent should read a sequence number meta event', function(){
+  it('#readEvent should read a sequenceNumber meta event', function(){
     var reader = new MidiReader('\x00\xff\x00\x02\x01\x03')
     e = reader.readEvent();
     expect(e.deltaTime).to.equal(0);
     expect(e.type).to.equal('meta');
     expect(e.subtype).to.equal('sequenceNumber');
     expect(e.number).to.equal(259);
+  });
+
+  it('#readEvent should read a text meta event', function(){
+    var reader = new MidiReader('\x00\xff\x01\x09some text');
+    e = reader.readEvent();
+    expect(e.deltaTime).to.equal(0);
+    expect(e.type).to.equal('meta');
+    expect(e.subtype).to.equal('text');
+    expect(e.text).to.equal('some text');
   });
 
   it('#isAtEndOfFile should return false before reading the entire file', function(){
