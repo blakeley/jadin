@@ -84,6 +84,10 @@ MidiReader.prototype.readEvent = function() {
         event.subtype = 'marker';
         event.text = this.read(length);
         return event;
+      case 0x07:
+        event.subtype = 'cuePoint';
+        event.text = this.read(length);
+        return event;
 
     }
 
