@@ -9,27 +9,16 @@ MidiReader.prototype.read = function(length) {
   return result;
 }
 
-MidiReader.prototype.readInt8 = function(){
-  var result = this.data.charCodeAt(this.position);
-  this.position += 1;
-  return result;
-}
+MidiReader.prototype.readInt = function(numberOfBytes) {
+  var result = 0;
 
-MidiReader.prototype.readInt16 = function(){
-  var result = (
-    (this.data.charCodeAt(this.position    ) <<  8) +
-    (this.data.charCodeAt(this.position + 1)      ) );
-  this.position += 2;
-  return result;
-}
+  while(numberOfBytes > 0){
+    result <<= 8;
+    result += this.data.charCodeAt(this.position);
+    this.position += 1;
+    numberOfBytes -= 1;
+  }
 
-MidiReader.prototype.readInt32 = function() {
-  var result = (
-    (this.data.charCodeAt(this.position    ) << 24) +
-    (this.data.charCodeAt(this.position + 1) << 16) +
-    (this.data.charCodeAt(this.position + 2) <<  8) +
-    (this.data.charCodeAt(this.position + 3)      ) );
-  this.position += 4;
   return result;
 }
 
@@ -38,7 +27,7 @@ MidiReader.prototype.readVLQ = function() {
 
   do {
     result <<= 7;
-    octet = this.readInt8();
+    octet = this.readInt(1);
     result += (octet & 0x7f);
   } while (octet & 0x80)
 
@@ -49,16 +38,16 @@ MidiReader.prototype.readEvent = function() {
   var event = {};
   event.deltaTime = this.readVLQ();
 
-  var firstByte = this.readInt8();
+  var firstByte = this.readInt(1);
   if(firstByte == 0xff){
     event.type = 'meta';
-    var subtypeByte = this.readInt8();
+    var subtypeByte = this.readInt(1);
     var length = this.readVLQ();
     switch(subtypeByte){
       case 0x00:
         event.subtype = 'sequenceNumber';
         if (length != 2) throw "Length for this sequenceNumber event was " + length + ", but must be 2";
-        event.number = this.readInt16();
+        event.number = this.readInt(2);
         return event;
       case 0x01:
         event.subtype = 'text';
@@ -98,12 +87,12 @@ MidiReader.prototype.readEvent = function() {
         return event;
       case 0x20:
         event.subtype = 'channelPrefix';
-        event.text = this.readInt8();
+        event.text = this.readInt(1);
         if (length != 1) throw "Length for this midiChannelPrefix event was " + length + ", but must be 1";
         return event;
       case 0x21:
         event.subtype = 'port';
-        event.port = this.readInt8();
+        event.port = this.readInt(1);
         if (length != 1) throw "Length for this port event was " + length + ", but must be 1";
         return event;
       case 0x2f:
@@ -113,7 +102,7 @@ MidiReader.prototype.readEvent = function() {
       case 0x51:
         event.subtype = 'setTempo'
         if (length != 3) throw "Length for this setTempo event was " + length + ", but must be 0";
-        event.microsecondsPerBeat = (this.readInt8() << 16) + (this.readInt8() << 8) + (this.readInt8())
+        event.microsecondsPerBeat = this.readInt(3);
         return event;
 
 
@@ -127,7 +116,7 @@ MidiReader.prototype.readEvent = function() {
       dataByte1 = firstByte;
       statusByte = this.lastStatusByte; 
     } else { // new status; first byte is the status byte
-      dataByte1 = this.readInt8();
+      dataByte1 = this.readInt(1);
       statusByte = firstByte;
       this.lastStatusByte = statusByte;
     }
@@ -138,22 +127,22 @@ MidiReader.prototype.readEvent = function() {
       case 0x8:
         event.subtype = 'noteOff';
         event.pitch = dataByte1;
-        event.velocity = this.readInt8();
+        event.velocity = this.readInt(1);
         return event;
       case 0x9:
         event.pitch = dataByte1;
-        event.velocity = this.readInt8();
+        event.velocity = this.readInt(1);
         event.subtype = (event.velocity==0 ? 'noteOff' : 'noteOn')
         return event;
       case 0xa:
         event.subtype = 'aftertouch';
         event.pitch = dataByte1;
-        event.pressure = this.readInt8();
+        event.pressure = this.readInt(1);
         return event;
       case 0xb:
         event.subtype = 'controller';
         event.controller = dataByte1;
-        event.value = this.readInt8();
+        event.value = this.readInt(1);
         return event;
       case 0xc:
         event.subtype = 'program';
@@ -165,7 +154,7 @@ MidiReader.prototype.readEvent = function() {
         return event;
       case 0xe:
         event.subtype = 'pitchBend';
-        event.value = (this.readInt8() << 7) + dataByte1
+        event.value = (this.readInt(1) << 7) + dataByte1
         return event;
     }    
   }
@@ -179,7 +168,7 @@ MidiReader.prototype.readEvent = function() {
 
 MidiReader.prototype.readChunk = function(){
   var type = this.read(4);
-  var length = this.readInt32();
+  var length = this.readInt(4);
   var data = this.read(length);
   return {
     type: type,

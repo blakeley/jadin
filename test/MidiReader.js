@@ -18,29 +18,37 @@ describe('MidiReader', function(){
     expect(reader.position).to.equal(5);
   });
 
-  it('#readInt8 should read an the next byte as an 8-bit integer', function(){
+  it('#readInt(1) should read an the next byte as an 8-bit integer', function(){
     var reader = new MidiReader('\x00\x01\x02\x03');
-    expect(reader.readInt8()).to.equal(0)
+    expect(reader.readInt(1)).to.equal(0)
     expect(reader.position).to.equal(1)
-    expect(reader.readInt8()).to.equal(1)
+    expect(reader.readInt(1)).to.equal(1)
     expect(reader.position).to.equal(2)
-    expect(reader.readInt8()).to.equal(2)
-    expect(reader.readInt8()).to.equal(3)
+    expect(reader.readInt(1)).to.equal(2)
+    expect(reader.readInt(1)).to.equal(3)
   });
 
-  it('#readInt16 should read the next 2 bytes as a 16-bit big-endian binary number', function(){
+  it('#readInt(2) should read the next 2 bytes as a 16-bit integer', function(){
     var reader = new MidiReader('\x00\x01\x02\x03');
-    expect(reader.readInt16()).to.equal(1);
+    expect(reader.readInt(2)).to.equal(1);
     expect(reader.position).to.equal(2)
-    expect(reader.readInt16()).to.equal(2*256+3);
+    expect(reader.readInt(2)).to.equal(2*256+3);
     expect(reader.position).to.equal(4)
   });
 
-  it('#readInt32 should read the next 4 bytes as a 32-bit big-endian binary number', function(){
+  it('#readInt(3) should read the next 3 bytes as a 24-bit integer', function(){
+    var reader = new MidiReader('\x00\x00\x00\x01\x02\x03');
+    expect(reader.readInt(3)).to.equal(0);
+    expect(reader.position).to.equal(3)
+    expect(reader.readInt(3)).to.equal(1*256*256+2*256+3);
+    expect(reader.position).to.equal(6)
+  });
+
+  it('#readInt(4) should read the next 4 bytes as a 32-bit integer', function(){
     var reader = new MidiReader('\x00\x00\x00\x00\x01\x02\x03\x04');
-    expect(reader.readInt32()).to.equal(0);
+    expect(reader.readInt(4)).to.equal(0);
     expect(reader.position).to.equal(4)
-    expect(reader.readInt32()).to.equal(16909060);
+    expect(reader.readInt(4)).to.equal(16909060);
     expect(reader.position).to.equal(8)
   });
 
