@@ -308,6 +308,15 @@ describe('MidiReader', function(){
     expect(e.subtype).to.equal('endOfTrack');
   });
 
+  it('#readEvent should read a setTempo meta event', function(){
+    var reader = new MidiReader('\x00\xFF\x51\x03\x07\xA1\x20');
+    e = reader.readEvent();
+    expect(e.deltaTime).to.equal(0);
+    expect(e.type).to.equal('meta');
+    expect(e.subtype).to.equal('setTempo');
+    expect(e.microsecondsPerBeat).to.equal(500000);
+  });
+
 })
 
 

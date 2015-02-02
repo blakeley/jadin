@@ -110,6 +110,12 @@ MidiReader.prototype.readEvent = function() {
         event.subtype = 'endOfTrack';
         if (length != 0) throw "Length for this endOfTrack event was " + length + ", but must be 0";
         return event;
+      case 0x51:
+        event.subtype = 'setTempo'
+        if (length != 3) throw "Length for this setTempo event was " + length + ", but must be 0";
+        event.microsecondsPerBeat = (this.readInt8() << 16) + (this.readInt8() << 8) + (this.readInt8())
+        return event;
+
 
 
     }
