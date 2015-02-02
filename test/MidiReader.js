@@ -291,6 +291,15 @@ describe('MidiReader', function(){
     expect(e.text).to.equal(2);
   });
 
+  it('#readEvent should read a port meta event', function(){
+    var reader = new MidiReader('\x00\xff\x21\x01\x03');
+    e = reader.readEvent();
+    expect(e.deltaTime).to.equal(0);
+    expect(e.type).to.equal('meta');
+    expect(e.subtype).to.equal('port');
+    expect(e.port).to.equal(3);
+  });
+
   it('#readEvent should read an endOfTrack meta event', function(){
     var reader = new MidiReader('\x00\xff\x2f\x00');
     e = reader.readEvent();

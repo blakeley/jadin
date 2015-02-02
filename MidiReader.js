@@ -57,7 +57,7 @@ MidiReader.prototype.readEvent = function() {
     switch(subtypeByte){
       case 0x00:
         event.subtype = 'sequenceNumber';
-        if (length != 2) throw "Length for this sequenceNumber was " + length + ", but must be 2";
+        if (length != 2) throw "Length for this sequenceNumber event was " + length + ", but must be 2";
         event.number = this.readInt16();
         return event;
       case 0x01:
@@ -99,7 +99,12 @@ MidiReader.prototype.readEvent = function() {
       case 0x20:
         event.subtype = 'channelPrefix';
         event.text = this.readInt8();
-        if (length != 1) throw "Length for this midiChannelPrefix was " + length + ", but must be 1";
+        if (length != 1) throw "Length for this midiChannelPrefix event was " + length + ", but must be 1";
+        return event;
+      case 0x21:
+        event.subtype = 'port';
+        event.port = this.readInt8();
+        if (length != 1) throw "Length for this port event was " + length + ", but must be 1";
         return event;
       case 0x2f:
         event.subtype = 'endOfTrack';
