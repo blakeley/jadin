@@ -100,9 +100,20 @@ MidiReader.prototype.readEvent = function() {
         if (length != 0) throw "Length for this endOfTrack event was " + length + ", but must be 0";
         return event;
       case 0x51:
-        event.subtype = 'setTempo'
-        if (length != 3) throw "Length for this setTempo event was " + length + ", but must be 0";
+        event.subtype = 'setTempo';
+        if (length != 3) throw "Length for this setTempo event was " + length + ", but must be 3";
         event.microsecondsPerBeat = this.readInt(3);
+        return event;
+      case 0x54:
+        event.subtype = 'smpteOffset';
+        if (length != 5) throw "Length for this smpteOffset event was " + length + ", but must be 5";
+        var hourByte = this.readInt(1);
+        event.frameRate = {0: 24, 1: 25, 2: 29.97, 3: 30}[hourByte >> 6];
+        event.hours = hourByte & 0x1f;
+        event.minutes = this.readInt(1);
+        event.seconds = this.readInt(1);
+        event.frames = this.readInt(1);
+        event.subframes = this.readInt(1);
         return event;
 
 

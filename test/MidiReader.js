@@ -317,7 +317,7 @@ describe('MidiReader', function(){
   });
 
   it('#readEvent should read a setTempo meta event', function(){
-    var reader = new MidiReader('\x00\xFF\x51\x03\x07\xA1\x20');
+    var reader = new MidiReader('\x00\xff\x51\x03\x07\xA1\x20');
     var event = reader.readEvent();
     expect(event.deltaTime).to.equal(0);
     expect(event.type).to.equal('meta');
@@ -325,7 +325,20 @@ describe('MidiReader', function(){
     expect(event.microsecondsPerBeat).to.equal(500000);
   });
 
-  
+  it('#readEvent should read a smpteOffset meta event', function(){
+    var reader = new MidiReader('\x00\xff\x54\x05\xc1\x02\x03\x04\x05');
+    var event = reader.readEvent();
+    expect(event.deltaTime).to.equal(0);
+    expect(event.type).to.equal('meta');
+    expect(event.subtype).to.equal('smpteOffset');
+    expect(event.frameRate).to.equal(30);
+    expect(event.hours).to.equal(1);
+    expect(event.minutes).to.equal(2);
+    expect(event.seconds).to.equal(3);
+    expect(event.frames).to.equal(4)
+    expect(event.subframes).to.equal(5);
+  });
+
 
 })
 
