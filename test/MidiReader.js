@@ -93,237 +93,239 @@ describe('MidiReader', function(){
   it('#readEvent should read a noteOff event', function(){
     // deltaTime, 8n, pitch, velocity 
     var reader = new MidiReader('\x00\x81\x3c\x32');
-    e = reader.readEvent();
-    expect(e.deltaTime).to.equal(0);
-    expect(e.type).to.equal('channel');
-    expect(e.subtype).to.equal('noteOff');
-    expect(e.channel).to.equal(1);
-    expect(e.pitch).to.equal(60);
-    expect(e.velocity).to.equal(50);
+    var event = reader.readEvent();
+    expect(event.deltaTime).to.equal(0);
+    expect(event.type).to.equal('channel');
+    expect(event.subtype).to.equal('noteOff');
+    expect(event.channel).to.equal(1);
+    expect(event.pitch).to.equal(60);
+    expect(event.velocity).to.equal(50);
   });
 
   it('#readEvent should read a noteOff event during a running status', function(){
     var reader = new MidiReader('\x00\x81\x3c\x32\x01\x3d\x33');
     reader.readEvent();
-    e = reader.readEvent();
-    expect(e.deltaTime).to.equal(1);
-    expect(e.type).to.equal('channel');
-    expect(e.subtype).to.equal('noteOff');
-    expect(e.channel).to.equal(1);
-    expect(e.pitch).to.equal(61);
-    expect(e.velocity).to.equal(51);
+    var event = reader.readEvent();
+    expect(event.deltaTime).to.equal(1);
+    expect(event.type).to.equal('channel');
+    expect(event.subtype).to.equal('noteOff');
+    expect(event.channel).to.equal(1);
+    expect(event.pitch).to.equal(61);
+    expect(event.velocity).to.equal(51);
   });
 
   it('#readEvent should read a noteOn event', function(){
     // deltaTime, 9n, pitch, velocity
     var reader = new MidiReader('\x00\x91\x3e\x34');
-    e = reader.readEvent();
-    expect(e.deltaTime).to.equal(0);
-    expect(e.type).to.equal('channel');
-    expect(e.subtype).to.equal('noteOn');
-    expect(e.channel).to.equal(1);
-    expect(e.pitch).to.equal(62);
-    expect(e.velocity).to.equal(52);
+    var event = reader.readEvent();
+    expect(event.deltaTime).to.equal(0);
+    expect(event.type).to.equal('channel');
+    expect(event.subtype).to.equal('noteOn');
+    expect(event.channel).to.equal(1);
+    expect(event.pitch).to.equal(62);
+    expect(event.velocity).to.equal(52);
   });
 
   it('#readEvent should read a noteOn event with velocity zero as a noteOff event', function(){
     var reader = new MidiReader('\x00\x91\x3f\x00');
-    e = reader.readEvent();
-    expect(e.deltaTime).to.equal(0);
-    expect(e.type).to.equal('channel');
-    expect(e.subtype).to.equal('noteOff');
-    expect(e.channel).to.equal(1);
-    expect(e.pitch).to.equal(63);
-    expect(e.velocity).to.equal(0);
+    var event = reader.readEvent();
+    expect(event.deltaTime).to.equal(0);
+    expect(event.type).to.equal('channel');
+    expect(event.subtype).to.equal('noteOff');
+    expect(event.channel).to.equal(1);
+    expect(event.pitch).to.equal(63);
+    expect(event.velocity).to.equal(0);
   });
 
   it('#readEvent should read an aftertouch event', function(){
     // deltaTime, an, pitch, pressure
     var reader = new MidiReader('\x00\xa1\x40\x35');
-    e = reader.readEvent();
-    expect(e.deltaTime).to.equal(0);
-    expect(e.type).to.equal('channel');
-    expect(e.subtype).to.equal('aftertouch');
-    expect(e.channel).to.equal(1);
-    expect(e.pitch).to.equal(64);
-    expect(e.pressure).to.equal(53);    
+    var event = reader.readEvent();
+    expect(event.deltaTime).to.equal(0);
+    expect(event.type).to.equal('channel');
+    expect(event.subtype).to.equal('aftertouch');
+    expect(event.channel).to.equal(1);
+    expect(event.pitch).to.equal(64);
+    expect(event.pressure).to.equal(53);    
   });
 
   it('#readEvent should read a controller event', function(){
     // deltaTime, bn, controller, value
     var reader = new MidiReader('\x00\xb1\x41\x36');
-    e = reader.readEvent();
-    expect(e.deltaTime).to.equal(0);
-    expect(e.type).to.equal('channel');
-    expect(e.subtype).to.equal('controller');
-    expect(e.controller).to.equal(65);
-    expect(e.value).to.equal(54);
+    var event = reader.readEvent();
+    expect(event.deltaTime).to.equal(0);
+    expect(event.type).to.equal('channel');
+    expect(event.subtype).to.equal('controller');
+    expect(event.controller).to.equal(65);
+    expect(event.value).to.equal(54);
   });
 
   it('#readEvent should read a program event', function(){
     // deltaTime, cn, program
     var reader = new MidiReader('\x00\xc1\x42');
-    e = reader.readEvent();
-    expect(e.deltaTime).to.equal(0);
-    expect(e.type).to.equal('channel');
-    expect(e.subtype).to.equal('program');
-    expect(e.program).to.equal(66);
+    var event = reader.readEvent();
+    expect(event.deltaTime).to.equal(0);
+    expect(event.type).to.equal('channel');
+    expect(event.subtype).to.equal('program');
+    expect(event.program).to.equal(66);
   });
 
   it('#readEvent should read a channelPressure event', function(){
     // deltaTime, dn, pressure
     var reader = new MidiReader('\x00\xd1\x43');
-    e = reader.readEvent();
-    expect(e.deltaTime).to.equal(0);
-    expect(e.type).to.equal('channel');
-    expect(e.subtype).to.equal('channelPressure');
-    expect(e.pressure).to.equal(67);
+    var event = reader.readEvent();
+    expect(event.deltaTime).to.equal(0);
+    expect(event.type).to.equal('channel');
+    expect(event.subtype).to.equal('channelPressure');
+    expect(event.pressure).to.equal(67);
   });
 
   it('#readEvent should read a channelPressure event', function(){
     // deltaTime, dn, pressure
     var reader = new MidiReader('\x00\xd1\x43');
-    e = reader.readEvent();
-    expect(e.deltaTime).to.equal(0);
-    expect(e.type).to.equal('channel');
-    expect(e.subtype).to.equal('channelPressure');
-    expect(e.pressure).to.equal(67);
+    var event = reader.readEvent();
+    expect(event.deltaTime).to.equal(0);
+    expect(event.type).to.equal('channel');
+    expect(event.subtype).to.equal('channelPressure');
+    expect(event.pressure).to.equal(67);
   });
 
   it('#readEvent should read a pitchBend event', function(){
     // deltaTime, en, lsb, msb
     var reader = new MidiReader('\x00\xe1\x05\x03');
-    e = reader.readEvent();
-    expect(e.deltaTime).to.equal(0);
-    expect(e.type).to.equal('channel');
-    expect(e.subtype).to.equal('pitchBend');
-    expect(e.value).to.equal(389);    
+    var event = reader.readEvent();
+    expect(event.deltaTime).to.equal(0);
+    expect(event.type).to.equal('channel');
+    expect(event.subtype).to.equal('pitchBend');
+    expect(event.value).to.equal(389);    
   });
 
   it('#readEvent should read a sequenceNumber meta event', function(){
     var reader = new MidiReader('\x00\xff\x00\x02\x01\x03')
-    e = reader.readEvent();
-    expect(e.deltaTime).to.equal(0);
-    expect(e.type).to.equal('meta');
-    expect(e.subtype).to.equal('sequenceNumber');
-    expect(e.number).to.equal(259);
+    var event = reader.readEvent();
+    expect(event.deltaTime).to.equal(0);
+    expect(event.type).to.equal('meta');
+    expect(event.subtype).to.equal('sequenceNumber');
+    expect(event.number).to.equal(259);
   });
 
   it('#readEvent should read a text meta event', function(){
     var reader = new MidiReader('\x00\xff\x01\x09some text');
-    e = reader.readEvent();
-    expect(e.deltaTime).to.equal(0);
-    expect(e.type).to.equal('meta');
-    expect(e.subtype).to.equal('text');
-    expect(e.text).to.equal('some text');
+    var event = reader.readEvent();
+    expect(event.deltaTime).to.equal(0);
+    expect(event.type).to.equal('meta');
+    expect(event.subtype).to.equal('text');
+    expect(event.text).to.equal('some text');
   });
 
   it('#readEvent should read a copyright meta event', function(){
     var reader = new MidiReader('\x00\xff\x02\x0f© Noteriver.com');
-    e = reader.readEvent();
-    expect(e.deltaTime).to.equal(0);
-    expect(e.type).to.equal('meta');
-    expect(e.subtype).to.equal('copyright');
-    expect(e.text).to.equal('© Noteriver.com');
+    var event = reader.readEvent();
+    expect(event.deltaTime).to.equal(0);
+    expect(event.type).to.equal('meta');
+    expect(event.subtype).to.equal('copyright');
+    expect(event.text).to.equal('© Noteriver.com');
   });
 
   it('#readEvent should read a trackName meta event', function(){
     var reader = new MidiReader('\x00\xff\x03\x0eUnknown Song 1');
-    e = reader.readEvent();
-    expect(e.deltaTime).to.equal(0);
-    expect(e.type).to.equal('meta');
-    expect(e.subtype).to.equal('trackName');
-    expect(e.text).to.equal('Unknown Song 1');
+    var event = reader.readEvent();
+    expect(event.deltaTime).to.equal(0);
+    expect(event.type).to.equal('meta');
+    expect(event.subtype).to.equal('trackName');
+    expect(event.text).to.equal('Unknown Song 1');
   });
 
   it('#readEvent should read an instrumentName meta event', function(){
     var reader = new MidiReader('\x00\xff\x04\x07Cowbell');
-    e = reader.readEvent();
-    expect(e.deltaTime).to.equal(0);
-    expect(e.type).to.equal('meta');
-    expect(e.subtype).to.equal('instrumentName');
-    expect(e.text).to.equal('Cowbell');
+    var event = reader.readEvent();
+    expect(event.deltaTime).to.equal(0);
+    expect(event.type).to.equal('meta');
+    expect(event.subtype).to.equal('instrumentName');
+    expect(event.text).to.equal('Cowbell');
   });
 
   it('#readEvent should read a lyric meta event', function(){
     var reader = new MidiReader('\x00\xff\x05\x04hey!');
-    e = reader.readEvent();
-    expect(e.deltaTime).to.equal(0);
-    expect(e.type).to.equal('meta');
-    expect(e.subtype).to.equal('lyric');
-    expect(e.text).to.equal('hey!');
+    var event = reader.readEvent();
+    expect(event.deltaTime).to.equal(0);
+    expect(event.type).to.equal('meta');
+    expect(event.subtype).to.equal('lyric');
+    expect(event.text).to.equal('hey!');
   });
 
   it('#readEvent should read a marker meta event', function(){
     var reader = new MidiReader('\x00\xff\x06\x05Verse');
-    e = reader.readEvent();
-    expect(e.deltaTime).to.equal(0);
-    expect(e.type).to.equal('meta');
-    expect(e.subtype).to.equal('marker');
-    expect(e.text).to.equal('Verse');
+    var event = reader.readEvent();
+    expect(event.deltaTime).to.equal(0);
+    expect(event.type).to.equal('meta');
+    expect(event.subtype).to.equal('marker');
+    expect(event.text).to.equal('Verse');
   });
 
   it('#readEvent should read a cuePoint meta event', function(){
     var reader = new MidiReader('\x00\xff\x07\x05Solo');
-    e = reader.readEvent();
-    expect(e.deltaTime).to.equal(0);
-    expect(e.type).to.equal('meta');
-    expect(e.subtype).to.equal('cuePoint');
-    expect(e.text).to.equal('Solo');
+    var event = reader.readEvent();
+    expect(event.deltaTime).to.equal(0);
+    expect(event.type).to.equal('meta');
+    expect(event.subtype).to.equal('cuePoint');
+    expect(event.text).to.equal('Solo');
   });
 
   it('#readEvent should read a programName meta event', function(){
     var reader = new MidiReader('\x00\xff\x08\x08drum kit');
-    e = reader.readEvent();
-    expect(e.deltaTime).to.equal(0);
-    expect(e.type).to.equal('meta');
-    expect(e.subtype).to.equal('programName');
-    expect(e.text).to.equal('drum kit');
+    var event = reader.readEvent();
+    expect(event.deltaTime).to.equal(0);
+    expect(event.type).to.equal('meta');
+    expect(event.subtype).to.equal('programName');
+    expect(event.text).to.equal('drum kit');
   });
 
   it('#readEvent should read a deviceName meta event', function(){
     var reader = new MidiReader('\x00\xff\x09\x05Casio');
-    e = reader.readEvent();
-    expect(e.deltaTime).to.equal(0);
-    expect(e.type).to.equal('meta');
-    expect(e.subtype).to.equal('deviceName');
-    expect(e.text).to.equal('Casio');
+    var event = reader.readEvent();
+    expect(event.deltaTime).to.equal(0);
+    expect(event.type).to.equal('meta');
+    expect(event.subtype).to.equal('deviceName');
+    expect(event.text).to.equal('Casio');
   });
 
   it('#readEvent should read a channelPrefix meta event', function(){
     var reader = new MidiReader('\x00\xff\x20\x01\x02');
-    e = reader.readEvent();
-    expect(e.deltaTime).to.equal(0);
-    expect(e.type).to.equal('meta');
-    expect(e.subtype).to.equal('channelPrefix');
-    expect(e.text).to.equal(2);
+    var event = reader.readEvent();
+    expect(event.deltaTime).to.equal(0);
+    expect(event.type).to.equal('meta');
+    expect(event.subtype).to.equal('channelPrefix');
+    expect(event.text).to.equal(2);
   });
 
   it('#readEvent should read a port meta event', function(){
     var reader = new MidiReader('\x00\xff\x21\x01\x03');
-    e = reader.readEvent();
-    expect(e.deltaTime).to.equal(0);
-    expect(e.type).to.equal('meta');
-    expect(e.subtype).to.equal('port');
-    expect(e.port).to.equal(3);
+    var event = reader.readEvent();
+    expect(event.deltaTime).to.equal(0);
+    expect(event.type).to.equal('meta');
+    expect(event.subtype).to.equal('port');
+    expect(event.port).to.equal(3);
   });
 
   it('#readEvent should read an endOfTrack meta event', function(){
     var reader = new MidiReader('\x00\xff\x2f\x00');
-    e = reader.readEvent();
-    expect(e.deltaTime).to.equal(0);
-    expect(e.type).to.equal('meta');
-    expect(e.subtype).to.equal('endOfTrack');
+    var event = reader.readEvent();
+    expect(event.deltaTime).to.equal(0);
+    expect(event.type).to.equal('meta');
+    expect(event.subtype).to.equal('endOfTrack');
   });
 
   it('#readEvent should read a setTempo meta event', function(){
     var reader = new MidiReader('\x00\xFF\x51\x03\x07\xA1\x20');
-    e = reader.readEvent();
-    expect(e.deltaTime).to.equal(0);
-    expect(e.type).to.equal('meta');
-    expect(e.subtype).to.equal('setTempo');
-    expect(e.microsecondsPerBeat).to.equal(500000);
+    var event = reader.readEvent();
+    expect(event.deltaTime).to.equal(0);
+    expect(event.type).to.equal('meta');
+    expect(event.subtype).to.equal('setTempo');
+    expect(event.microsecondsPerBeat).to.equal(500000);
   });
+
+  
 
 })
 
