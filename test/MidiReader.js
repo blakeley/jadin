@@ -339,6 +339,18 @@ describe('MidiReader', function(){
     expect(event.subframes).to.equal(5);
   });
 
+  it('#readEvent should read a timeSignature meta event', function(){
+    var reader = new MidiReader('\x00\xff\x58\x04\x03\x02\x18\x08');
+    var event = reader.readEvent();
+    expect(event.deltaTime).to.equal(0);
+    expect(event.type).to.equal('meta');
+    expect(event.subtype).to.equal('timeSignature');
+    expect(event.numerator).to.equal(3);
+    expect(event.denominator).to.equal(4);
+    expect(event.metronome).to.equal(24);
+    expect(event.thirtySeconds).to.equal(8);
+  });
+
 
 })
 

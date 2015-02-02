@@ -115,6 +115,14 @@ MidiReader.prototype.readEvent = function() {
         event.frames = this.readInt(1);
         event.subframes = this.readInt(1);
         return event;
+      case 0x58:
+        event.subtype = 'timeSignature';
+        if (length != 4) throw "Length for this timeSignature event was " + length + ", but must be 4";
+        event.numerator = this.readInt(1);
+        event.denominator = Math.pow(2, this.readInt(1));
+        event.metronome = this.readInt(1);
+        event.thirtySeconds = this.readInt(1);
+        return event;
 
 
 
