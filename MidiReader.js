@@ -134,11 +134,12 @@ MidiReader.prototype.readEvent = function() {
         event.subtype = 'sequencerSpecific';
         event.data = this.read(length);
         return event;
-
-
-
     }
-
+  } else if(firstByte == 0xf0) {
+    event.type = 'sysEx';
+    var length = this.readVLQ();
+    event.data = this.read(length);
+    return event;
   } else {
     event.type = 'channel';
     var statusByte, dataByte1;

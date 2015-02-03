@@ -370,6 +370,14 @@ describe('MidiReader', function(){
     expect(event.data).to.equal('\x41\x04\x01\x56');
   });
 
+  it('#readEvent should read sysEx events', function(){
+    var reader = new MidiReader('\x00\xf0\x05\x7e\x00\x09\x01\xf7');
+    var event = reader.readEvent();
+    expect(event.deltaTime).to.equal(0);
+    expect(event.type).to.equal('sysEx');
+    expect(event.data).to.equal('\x7e\x00\x09\x01\xf7');
+  });
+
 
 })
 
