@@ -2,7 +2,7 @@ var Midi = require('../Midi');
 var fs = require('fs');
 var expect = require('chai').expect;
 
-var cScaleData = fs.readFileSync('fixtures/c.mid', 'utf8');
+var cScaleData = fs.readFileSync('fixtures/c.mid', 'binary');
 var cScaleMidi = new Midi(cScaleData);
 
 describe('Midi', function(){
@@ -15,7 +15,6 @@ describe('Midi', function(){
   });
 
   it('#ppqn should return the number of pulses per quarter note', function(){
-    expect(cScaleMidi.ppqn).to.equal(96);
-  })
-
+    expect(cScaleMidi.ppqn).to.equal(480);
+  });
 })

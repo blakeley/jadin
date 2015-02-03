@@ -2,7 +2,7 @@ var MidiReader = require('../MidiReader');
 var expect = require('chai').expect;
 var fs = require('fs');
 
-var cScaleData = fs.readFileSync('fixtures/c.mid', 'utf8');
+var cScaleData = fs.readFileSync('fixtures/c.mid', 'binary');
 
 describe('MidiReader', function(){
   it('should construct a MidiReader instance', function(){
@@ -69,7 +69,7 @@ describe('MidiReader', function(){
     chunk = cScaleMidiReader.readChunk();
     expect(chunk.type).to.equal('MThd');
     expect(chunk.length).to.equal(6);
-    expect(chunk.data).to.equal('\x00\x01\x00\x02\x00`');
+    expect(chunk.data).to.equal('\x00\x01\x00\x03\x01à');
     expect(cScaleMidiReader.position).to.equal(14)
   });
 
@@ -80,6 +80,8 @@ describe('MidiReader', function(){
     expect(cScaleMidiReader.isAtEndOfFile()).to.equal(false);
     track1 = cScaleMidiReader.readChunk();
     expect(cScaleMidiReader.isAtEndOfFile()).to.equal(false);
+    track2 = cScaleMidiReader.readChunk();
+    expect(cScaleMidiReader.isAtEndOfFile()).to.equal(false);
   });
 
   it('#isAtEndOfFile should return true after reading the entire file', function(){
@@ -87,6 +89,7 @@ describe('MidiReader', function(){
     header = cScaleMidiReader.readChunk();
     track1 = cScaleMidiReader.readChunk();
     track2 = cScaleMidiReader.readChunk();
+    finalTrack = cScaleMidiReader.readChunk();
     expect(cScaleMidiReader.isAtEndOfFile()).to.equal(true);
   });
 
