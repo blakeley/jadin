@@ -359,7 +359,15 @@ describe('MidiReader', function(){
     expect(event.subtype).to.equal('keySignature');
     expect(event.key).to.equal(-3);
     expect(event.scale).to.equal('minor');
+  });
 
+  it('#readEvent should read a sequencerSpecific meta event', function(){
+    var reader = new MidiReader('\x00\xff\x7f\x04\x41\x04\x01\x56');
+    var event = reader.readEvent();
+    expect(event.deltaTime).to.equal(0);
+    expect(event.type).to.equal('meta');
+    expect(event.subtype).to.equal('sequencerSpecific');
+    expect(event.data).to.equal('\x41\x04\x01\x56');
   });
 
 

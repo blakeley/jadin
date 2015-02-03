@@ -130,6 +130,10 @@ MidiReader.prototype.readEvent = function() {
         if (event.key > 127) event.key = 128 - event.key;
         event.scale = {0: 'major', 1: 'minor'}[this.readInt(1)];
         return event;
+      case 0x7f:
+        event.subtype = 'sequencerSpecific';
+        event.data = this.read(length);
+        return event;
 
 
 
