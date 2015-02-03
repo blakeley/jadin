@@ -123,6 +123,13 @@ MidiReader.prototype.readEvent = function() {
         event.metronome = this.readInt(1);
         event.thirtySeconds = this.readInt(1);
         return event;
+      case 0x59:
+        event.subtype = 'keySignature';
+        if (length != 2) throw "Length for this keySignature event was " + length + ", but must be 2";
+        event.key = this.readInt(1);
+        if (event.key > 127) event.key = 128 - event.key;
+        event.scale = {0: 'major', 1: 'minor'}[this.readInt(1)];
+        return event;
 
 
 
