@@ -17,4 +17,9 @@ describe('Midi', function(){
   it('#ppqn should return the number of pulses per quarter note', function(){
     expect(cScaleMidi.ppqn).to.equal(480);
   });
+
+  it('#events should return an array of all events', function(){
+    expect(cScaleMidi.events).to.not.be.undefined();
+    expect(cScaleMidi.events.length).to.equal(27);
+  });
 })
