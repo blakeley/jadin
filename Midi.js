@@ -8,16 +8,18 @@ function Midi(data) {
   this.format = headerReader.readInt(2);
   var numberOfTracks = headerReader.readInt(2);
   this.ppqn = headerReader.readInt(2); // assumes metrical timing
-  
+
   this.events = [];
+  this.notes = [];
   for (var i = 0; i < numberOfTracks; i++) {
     var trackChunk = reader.readChunk();
-    if (trackChunk.type != 'MTrk') {
-      throw "Unexpected chunk type - expected MTrk, got " + trackChunk.type;
-    }
     var trackReader = new MidiReader(trackChunk.data);
+    var noteOnEvents = {}
+    var totalTicks = 0;
     while (!trackReader.isAtEndOfFile()) {
       var event = trackReader.readEvent();
+      totalTicks += event.deltaTime;
+      event.startTick  = totalTicks;
       this.events.push(event);
     }
   }

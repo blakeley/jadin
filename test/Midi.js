@@ -22,4 +22,15 @@ describe('Midi', function(){
     expect(cScaleMidi.events).to.not.be.undefined();
     expect(cScaleMidi.events.length).to.equal(27);
   });
+
+  it('#events.@each.startTick should return the MIDI tick at which this event starts', function(){
+    expect(cScaleMidi.events[0].startTick).to.equal(0);
+    expect(cScaleMidi.events[6].startTick).to.equal(0);
+    expect(cScaleMidi.events[7].startTick).to.equal(1920);
+    expect(cScaleMidi.events[8].startTick).to.equal(2400);
+    expect(cScaleMidi.events[9].startTick).to.equal(2400);
+    expect(cScaleMidi.events[10].startTick).to.equal(2880);
+    expect(cScaleMidi.events[16].startTick).to.equal(0);
+    expect(cScaleMidi.events[19].startTick).to.equal(480);
+  })
 })
