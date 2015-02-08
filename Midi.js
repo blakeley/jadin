@@ -21,6 +21,20 @@ function Midi(data) {
       totalTicks += event.deltaTime;
       event.startTick  = totalTicks;
       this.events.push(event);
+
+      switch(event.subtype){
+        case 'noteOn':
+          noteOnEvents[event.pitch] = event;
+          break;
+        case 'noteOff':
+          if (noteOnEvents[event.pitch] === undefined) throw "noteOff event without corresponding noteOn event";
+          var noteOnEvent = noteOnEvents[event.pitch];
+          note = {
+            pitch: event.pitch
+          };
+          this.notes.push(note);
+          break;
+      }
     }
   }
 

@@ -32,5 +32,10 @@ describe('Midi', function(){
     expect(cScaleMidi.events[10].startTick).to.equal(2880);
     expect(cScaleMidi.events[16].startTick).to.equal(0);
     expect(cScaleMidi.events[19].startTick).to.equal(480);
-  })
+  });
+
+  it('#notes should return an array of all notes', function(){
+    expect(cScaleMidi.notes).to.not.be.undefined();
+    expect(cScaleMidi.notes.length).to.equal(8);
+  });
 })
