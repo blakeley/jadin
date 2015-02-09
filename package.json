@@ -2,9 +2,10 @@
   "name": "jadin",
   "version": "0.0.0",
   "description": "A library for parsing MIDI files",
-  "main": "midi.js",
+  "main": "dist/jadin.js",
   "scripts": {
-    "test": "./node_modules/mocha/bin/mocha"
+    "test": "./node_modules/mocha/bin/mocha",
+    "build": "browserify Midi.js | uglifyjs > dist/jadin.js"
   },
   "repository": {
     "type": "git",
@@ -20,6 +21,8 @@
   "homepage": "https://github.com/blakeley/jadin",
   "devDependencies": {
     "chai": "^1.10.0",
-    "mocha": "^2.1.0"
+    "mocha": "^2.1.0",
+    "browserify": "latest",
+    "uglify-js": "latest"
   }
 }
