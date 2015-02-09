@@ -43,8 +43,13 @@ describe('Midi', function(){
     expect(cScaleMidi.tickToSecond(0)).to.equal(0);
     expect(cScaleMidi.tickToSecond(480)).to.equal(0.5);
     expect(cScaleMidi.tickToSecond(960)).to.equal(1.0);
+    expect(cScaleMidi.tickToSecond(1200)).to.equal(1.25);
   });
 
-
+  it('#tickToSecond should account for tempo changes', function(){
+    expect(cScaleMidi.tickToSecond(2400)).to.equal(2.1875);
+    expect(cScaleMidi.tickToSecond(4800)).to.equal(3.4375);
+    expect(cScaleMidi.tickToSecond(48000)).to.equal(25.9375);
+  });
 
 })

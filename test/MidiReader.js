@@ -325,7 +325,7 @@ describe('MidiReader', function(){
     expect(event.deltaTime).to.equal(0);
     expect(event.type).to.equal('meta');
     expect(event.subtype).to.equal('setTempo');
-    expect(event.microsecondsPerBeat).to.equal(500000);
+    expect(event.tempo).to.equal(500000);
   });
 
   it('#readEvent should read a smpteOffset meta event', function(){

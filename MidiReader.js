@@ -102,7 +102,7 @@ MidiReader.prototype.readEvent = function() {
       case 0x51:
         event.subtype = 'setTempo';
         if (length != 3) throw "Length for this setTempo event was " + length + ", but must be 3";
-        event.microsecondsPerBeat = this.readInt(3);
+        event.tempo = this.readInt(3);
         return event;
       case 0x54:
         event.subtype = 'smpteOffset';

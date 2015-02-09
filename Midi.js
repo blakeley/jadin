@@ -44,8 +44,20 @@ Midi.prototype.tickToSecond = function(tick) {
   var currentTick = 0;
   var currentTempo = 500000;
   var totalTime = 0;
-  totalTime += ((tick - currentTick) / this.ppqn) * currentTempo / 1000000.0
-  return totalTime
+  for (var i = 0; i < this.events.length; i++) {
+    event = this.events[i]
+    if(event.tick >= tick){
+      totalTime += ((tick - currentTick) / this.ppqn) * currentTempo / 1000000.0;
+      break;
+    }
+    if(event.subtype == 'setTempo'){
+      totalTime += ((event.tick - currentTick) / this.ppqn) * currentTempo / 1000000.0;
+      currentTick = event.tick;
+      currentTempo = event.tempo;
+    }
+  }
+
+  return totalTime;
 }
 
 
