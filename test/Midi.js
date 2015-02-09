@@ -20,22 +20,31 @@ describe('Midi', function(){
 
   it('#events should return an array of all events', function(){
     expect(cScaleMidi.events).to.not.be.undefined();
-    expect(cScaleMidi.events.length).to.equal(27);
+    expect(cScaleMidi.events.length).to.equal(28);
   });
 
-  it('#events.@each.startTick should return the MIDI tick at which this event starts', function(){
-    expect(cScaleMidi.events[0].startTick).to.equal(0);
-    expect(cScaleMidi.events[6].startTick).to.equal(0);
-    expect(cScaleMidi.events[7].startTick).to.equal(1920);
-    expect(cScaleMidi.events[8].startTick).to.equal(2400);
-    expect(cScaleMidi.events[9].startTick).to.equal(2400);
-    expect(cScaleMidi.events[10].startTick).to.equal(2880);
-    expect(cScaleMidi.events[16].startTick).to.equal(0);
-    expect(cScaleMidi.events[19].startTick).to.equal(480);
+  it('#events.@each.tick should return the MIDI tick at which this event starts', function(){
+    expect(cScaleMidi.events[0].tick).to.equal(0);
+    expect(cScaleMidi.events[6].tick).to.equal(0);
+    expect(cScaleMidi.events[8].tick).to.equal(1920);
+    expect(cScaleMidi.events[9].tick).to.equal(2400);
+    expect(cScaleMidi.events[10].tick).to.equal(2400);
+    expect(cScaleMidi.events[11].tick).to.equal(2880);
+    expect(cScaleMidi.events[17].tick).to.equal(0);
+    expect(cScaleMidi.events[20].tick).to.equal(480);
   });
 
   it('#notes should return an array of all notes', function(){
     expect(cScaleMidi.notes).to.not.be.undefined();
     expect(cScaleMidi.notes.length).to.equal(8);
   });
+
+  it('#tickToSecond should convert a MIDI ticks to playback seconds', function(){
+    expect(cScaleMidi.tickToSecond(0)).to.equal(0);
+    expect(cScaleMidi.tickToSecond(480)).to.equal(0.5);
+    expect(cScaleMidi.tickToSecond(960)).to.equal(1.0);
+  });
+
+
+
 })

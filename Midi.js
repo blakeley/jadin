@@ -15,11 +15,11 @@ function Midi(data) {
     var trackChunk = reader.readChunk();
     var trackReader = new MidiReader(trackChunk.data);
     var noteOnEvents = {}
-    var totalTicks = 0;
+    var currentTick = 0;
     while (!trackReader.isAtEndOfFile()) {
       var event = trackReader.readEvent();
-      totalTicks += event.deltaTime;
-      event.startTick  = totalTicks;
+      currentTick += event.deltaTime;
+      event.tick  = currentTick;
       this.events.push(event);
 
       switch(event.subtype){
@@ -37,8 +37,16 @@ function Midi(data) {
       }
     }
   }
-
-
 };
+
+
+Midi.prototype.tickToSecond = function(tick) {
+  var currentTick = 0;
+  var currentTempo = 500000;
+  var totalTime = 0;
+  totalTime += ((tick - currentTick) / this.ppqn) * currentTempo / 1000000.0
+  return totalTime
+}
+
 
 module.exports = Midi;
