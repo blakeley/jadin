@@ -1,4 +1,5 @@
 var MidiReader = require('./MidiReader');
+var Track = require ('./Track');
 
 function Midi(data) {
   var reader = new MidiReader(data);
@@ -9,33 +10,24 @@ function Midi(data) {
   var numberOfTracks = headerReader.readInt(2);
   this.ppqn = headerReader.readInt(2); // assumes metrical timing
 
-  this.events = [];
-  this.notes = [];
+  this.tracks = [];
   for (var i = 0; i < numberOfTracks; i++) {
     var trackChunk = reader.readChunk();
-    var trackReader = new MidiReader(trackChunk.data);
-    var noteOnEvents = {}
-    var currentTick = 0;
-    while (!trackReader.isAtEndOfFile()) {
-      var event = trackReader.readEvent();
-      currentTick += event.deltaTime;
-      event.tick  = currentTick;
-      this.events.push(event);
+    var track = new Track(trackChunk.data);
+    this.tracks.push(track);
+  }
+};
 
-      switch(event.subtype){
-        case 'noteOn':
-          noteOnEvents[event.pitch] = event;
-          break;
-        case 'noteOff':
-          if (noteOnEvents[event.pitch] === undefined) throw "noteOff event without corresponding noteOn event";
-          var noteOnEvent = noteOnEvents[event.pitch];
-          note = {
-            pitch: event.pitch
-          };
-          this.notes.push(note);
-          break;
-      }
-    }
+Midi.prototype = {
+  get notes(){
+    return this.tracks
+      .map(function(track){return track.notes})
+      .reduce(function(a,b){return a.concat(b)});
+  },
+  get events(){
+    return this.tracks
+      .map(function(track){return track.events})
+      .reduce(function(a,b){return a.concat(b)});
   }
 };
 

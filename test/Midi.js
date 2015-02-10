@@ -18,6 +18,10 @@ describe('Midi', function(){
     expect(cScaleMidi.ppqn).to.equal(480);
   });
 
+  it('#tracks should return an array of all tracks', function(){
+    expect(cScaleMidi.tracks.length).to.equal(3);
+  });
+
   it('#events should return an array of all events', function(){
     expect(cScaleMidi.events).to.not.be.undefined();
     expect(cScaleMidi.events.length).to.equal(28);
