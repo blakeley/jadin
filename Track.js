@@ -21,6 +21,7 @@ function Track(data) {
         if (noteOnEvents[event.pitch] === undefined) throw "noteOff event without corresponding noteOn event";
         var noteOnEvent = noteOnEvents[event.pitch];
         var note = new Note(noteOnEvent, event);
+        note.track = this;
         this.notes.push(note);
         break;
     }
