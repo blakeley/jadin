@@ -32,6 +32,8 @@ Midi.prototype = {
       .reduce(function(a,b){return a.concat(b)});
   },
   get tempoEvents(){
+    if(this._tempoEvents) return this._tempoEvents; // return if memoized
+
     // format 0: All events are on the zeroth track, including tempo events
     // format 1: All tempo events are on the zeroth track
     // format 2: not supported
