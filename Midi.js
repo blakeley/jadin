@@ -26,24 +26,22 @@ Midi.prototype = {
       .map(function(track){return track.notes})
       .reduce(function(a,b){return a.concat(b)});
   },
+
   get events(){
     return this.tracks
       .map(function(track){return track.events})
       .reduce(function(a,b){return a.concat(b)});
   },
+
   get tempoEvents(){
     if(this._tempoEvents) return this._tempoEvents; // return if memoized
 
     // format 0: All events are on the zeroth track, including tempo events
     // format 1: All tempo events are on the zeroth track
-    // format 2: not supported
-    this._tempoEvents = []
-    for (var i = 0; i < this.tracks[0].events.length; i++) {
-      var event = this.tracks[0].events[i]
-      if(event.subtype == 'setTempo') this._tempoEvents.push(event)
-    }
-
-    return this._tempoEvents;
+    // format 2: Every track has tempo events (not supported)
+    return this._tempoEvents = this.tracks[0].events.filter(function(event){
+      return event.subtype == 'setTempo';
+    })
   }
 };
 
