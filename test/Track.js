@@ -1,6 +1,7 @@
 var Track = require('../Track');
 var MidiReader = require('../MidiReader')
 var Midi = require('../Midi');
+var Note = require('../Note');
 var fs = require('fs');
 var expect = require('chai').expect;
 
@@ -21,6 +22,7 @@ describe('Track', function(){
   it('#notes should return an array of all notes', function(){
     expect(cScaleMidi.tracks[1].notes).to.not.be.undefined();
     expect(cScaleMidi.tracks[1].notes.length).to.equal(4);
+    expect(cScaleMidi.tracks[1].notes[0].constructor).to.equal(Note);
   });
 
   it('#midi should return the associated Midi object', function(){

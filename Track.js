@@ -1,5 +1,5 @@
 var MidiReader = require('./MidiReader');
-
+var Note = require('./Note');
 
 function Track(data) {
   this.events = [];
@@ -20,9 +20,7 @@ function Track(data) {
       case 'noteOff':
         if (noteOnEvents[event.pitch] === undefined) throw "noteOff event without corresponding noteOn event";
         var noteOnEvent = noteOnEvents[event.pitch];
-        note = {
-          pitch: event.pitch
-        };
+        var note = new Note(noteOnEvent, event);
         this.notes.push(note);
         break;
     }
