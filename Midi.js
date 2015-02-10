@@ -7,6 +7,7 @@ function Midi(data) {
   var headerChunk = reader.readChunk();
   var headerReader = new MidiReader(headerChunk.data);
   this.format = headerReader.readInt(2);
+  if(this.format == 2) throw "MIDI format 2 not supported";
   var numberOfTracks = headerReader.readInt(2);
   this.ppqn = headerReader.readInt(2); // assumes metrical timing
 
@@ -37,7 +38,10 @@ Midi.prototype.tickToSecond = function(tick) {
   var currentTick = 0;
   var currentTempo = 500000;
   var totalTime = 0;
-  for (var i = 0; i < this.events.length; i++) {
+  // format 0: All events are on the zeroth track, including tempo events
+  // format 1: All tempo events are on the zeroth track
+  // format 2: not supported
+  for (var i = 0; i < this.tracks[0].events.length; i++) {
     event = this.events[i]
     if(event.tick >= tick){
       break;
