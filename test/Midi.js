@@ -57,4 +57,9 @@ describe('Midi', function(){
     expect(cScaleMidi.tickToSecond(48000)).to.equal(25.9375);
   });
 
+  it('#tempoEvents should return all setTempo events', function(){
+    expect(cScaleMidi.tempoEvents).to.not.be.undefined;
+    expect(cScaleMidi.tempoEvents.length).to.equal(2);
+  })
+
 })

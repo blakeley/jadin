@@ -30,6 +30,18 @@ Midi.prototype = {
     return this.tracks
       .map(function(track){return track.events})
       .reduce(function(a,b){return a.concat(b)});
+  },
+  get tempoEvents(){
+    // format 0: All events are on the zeroth track, including tempo events
+    // format 1: All tempo events are on the zeroth track
+    // format 2: not supported
+    this._tempoEvents = []
+    for (var i = 0; i < this.tracks[0].events.length; i++) {
+      var event = this.tracks[0].events[i]
+      if(event.subtype == 'setTempo') this._tempoEvents.push(event)
+    }
+
+    return this._tempoEvents;
   }
 };
 
@@ -38,19 +50,12 @@ Midi.prototype.tickToSecond = function(tick) {
   var currentTick = 0;
   var currentTempo = 500000;
   var totalTime = 0;
-  // format 0: All events are on the zeroth track, including tempo events
-  // format 1: All tempo events are on the zeroth track
-  // format 2: not supported
-  for (var i = 0; i < this.tracks[0].events.length; i++) {
-    event = this.events[i]
-    if(event.tick >= tick){
-      break;
-    }
-    if(event.subtype == 'setTempo'){
-      totalTime += ((event.tick - currentTick) / this.ppqn) * currentTempo / 1000000.0;
-      currentTick = event.tick;
-      currentTempo = event.tempo;
-    }
+  for (var i = 0; i < this.tempoEvents.length; i++) {
+    var event = this.tempoEvents[i];
+    if(event.tick >= tick) break;
+    totalTime += ((event.tick - currentTick) / this.ppqn) * currentTempo / 1000000.0;
+    currentTick = event.tick;
+    currentTempo = event.tempo;
   }
 
   totalTime += ((tick - currentTick) / this.ppqn) * currentTempo / 1000000.0;
