@@ -6,15 +6,13 @@ var expect = require('chai').expect;
 var cScaleData = fs.readFileSync('fixtures/c.mid', 'binary');
 var cScaleMidi = new Midi(cScaleData);
 
-var note = new Note({pitch: 60}, {pitch: 60});
-
 describe('Note', function(){
   it('should construct a Note instance', function(){
-    expect(note).to.not.be.null();
+    expect(new Note({}, {})).to.not.be.null();
   });
 
   it('#pitch should return this note\'s pitch', function(){
-    expect(note.pitch).to.equal(60);
+    expect(cScaleMidi.tracks[1].notes[0].pitch).to.equal(65);
   });
 
   it('#track should return the associated Track object', function(){
@@ -23,6 +21,22 @@ describe('Note', function(){
 
   it('#midi should return the associated Midi object', function(){
     expect(cScaleMidi.tracks[1].notes[0].midi).to.equal(cScaleMidi);
+  });
+
+  it('#onTick should return the MIDI tick starting this Note', function(){
+    expect(cScaleMidi.tracks[1].notes[0].onTick).to.equal(1920);    
+  });
+
+  it('#offTick should return the MIDI tick ending this Note', function(){
+    expect(cScaleMidi.tracks[1].notes[0].offTick).to.equal(2400);    
+  });
+
+  it('#onSecond should return the second starting this Note', function(){
+    expect(cScaleMidi.tracks[1].notes[0].onSecond).to.equal(1.9375);    
+  });
+
+  it('#offSecond should return the second ending this Note', function(){
+    expect(cScaleMidi.tracks[1].notes[0].offSecond).to.equal(2.1875);    
   });
 
 
