@@ -14,6 +14,7 @@ function Midi(data) {
   for (var i = 0; i < numberOfTracks; i++) {
     var trackChunk = reader.readChunk();
     var track = new Track(trackChunk.data);
+    track.midi = this;
     this.tracks.push(track);
   }
 };
