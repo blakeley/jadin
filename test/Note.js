@@ -21,5 +21,9 @@ describe('Note', function(){
     expect(cScaleMidi.tracks[1].notes[0].track).to.equal(cScaleMidi.tracks[1]);
   });
 
+  it('#midi should return the associated Midi object', function(){
+    expect(cScaleMidi.tracks[1].notes[0].midi).to.equal(cScaleMidi);
+  });
+
 
 })
