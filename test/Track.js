@@ -25,6 +25,6 @@ describe('Track', function(){
 
   it('#midi should return the associated Midi object', function(){
     expect(cScaleMidi.tracks[1].midi).to.equal(cScaleMidi);
-  })
+  });
 
 })

@@ -13,7 +13,6 @@ function Track(data) {
     currentTick += event.deltaTime;
     event.tick  = currentTick;
     this.events.push(event);
-
     switch(event.subtype){
       case 'noteOn':
         noteOnEvents[event.pitch] = event;
