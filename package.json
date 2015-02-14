@@ -5,7 +5,7 @@
   "main": "dist/jadin.js",
   "scripts": {
     "test": "./node_modules/mocha/bin/mocha",
-    "build": "browserify Midi.js | uglifyjs > dist/jadin.js"
+    "build": "browserify Midi.js -s Midi > dist/jadin.js"
   },
   "repository": {
     "type": "git",
@@ -22,7 +22,6 @@
   "devDependencies": {
     "chai": "^1.10.0",
     "mocha": "^2.1.0",
-    "browserify": "latest",
-    "uglify-js": "latest"
+    "browserify": "latest"
   }
 }

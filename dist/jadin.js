@@ -1,1 +1,352 @@
-(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){var MidiReader=require("./MidiReader");function Midi(data){var reader=new MidiReader(data);var headerChunk=reader.readChunk();var headerReader=new MidiReader(headerChunk.data);this.format=headerReader.readInt(2);var numberOfTracks=headerReader.readInt(2);this.ppqn=headerReader.readInt(2);this.events=[];this.notes=[];for(var i=0;i<numberOfTracks;i++){var trackChunk=reader.readChunk();var trackReader=new MidiReader(trackChunk.data);var noteOnEvents={};var currentTick=0;while(!trackReader.isAtEndOfFile()){var event=trackReader.readEvent();currentTick+=event.deltaTime;event.tick=currentTick;this.events.push(event);switch(event.subtype){case"noteOn":noteOnEvents[event.pitch]=event;break;case"noteOff":if(noteOnEvents[event.pitch]===undefined)throw"noteOff event without corresponding noteOn event";var noteOnEvent=noteOnEvents[event.pitch];note={pitch:event.pitch};this.notes.push(note);break}}}}Midi.prototype.tickToSecond=function(tick){var currentTick=0;var currentTempo=5e5;var totalTime=0;for(var i=0;i<this.events.length;i++){event=this.events[i];if(event.tick>=tick){break}if(event.subtype=="setTempo"){totalTime+=(event.tick-currentTick)/this.ppqn*currentTempo/1e6;currentTick=event.tick;currentTempo=event.tempo}}totalTime+=(tick-currentTick)/this.ppqn*currentTempo/1e6;return totalTime};module.exports=Midi},{"./MidiReader":2}],2:[function(require,module,exports){function MidiReader(data){this.data=data;this.position=0}MidiReader.prototype.read=function(length){var result=this.data.substr(this.position,length);this.position+=length;return result};MidiReader.prototype.readInt=function(numberOfBytes){var result=0;while(numberOfBytes>0){result<<=8;result+=this.data.charCodeAt(this.position);this.position+=1;numberOfBytes-=1}return result};MidiReader.prototype.readVLQ=function(){var result=0;do{result<<=7;octet=this.readInt(1);result+=octet&127}while(octet&128);return result};MidiReader.prototype.readEvent=function(){var event={};event.deltaTime=this.readVLQ();var firstByte=this.readInt(1);if(firstByte==255){event.type="meta";var subtypeByte=this.readInt(1);var length=this.readVLQ();switch(subtypeByte){case 0:event.subtype="sequenceNumber";if(length!=2)throw"Length for this sequenceNumber event was "+length+", but must be 2";event.number=this.readInt(2);return event;case 1:event.subtype="text";event.text=this.read(length);return event;case 2:event.subtype="copyright";event.text=this.read(length);return event;case 3:event.subtype="trackName";event.text=this.read(length);return event;case 4:event.subtype="instrumentName";event.text=this.read(length);return event;case 5:event.subtype="lyric";event.text=this.read(length);return event;case 6:event.subtype="marker";event.text=this.read(length);return event;case 7:event.subtype="cuePoint";event.text=this.read(length);return event;case 8:event.subtype="programName";event.text=this.read(length);return event;case 9:event.subtype="deviceName";event.text=this.read(length);return event;case 32:event.subtype="channelPrefix";event.text=this.readInt(1);if(length!=1)throw"Length for this midiChannelPrefix event was "+length+", but must be 1";return event;case 33:event.subtype="port";event.port=this.readInt(1);if(length!=1)throw"Length for this port event was "+length+", but must be 1";return event;case 47:event.subtype="endOfTrack";if(length!=0)throw"Length for this endOfTrack event was "+length+", but must be 0";return event;case 81:event.subtype="setTempo";if(length!=3)throw"Length for this setTempo event was "+length+", but must be 3";event.tempo=this.readInt(3);return event;case 84:event.subtype="smpteOffset";if(length!=5)throw"Length for this smpteOffset event was "+length+", but must be 5";var hourByte=this.readInt(1);event.frameRate={0:24,1:25,2:29.97,3:30}[hourByte>>6];event.hours=hourByte&31;event.minutes=this.readInt(1);event.seconds=this.readInt(1);event.frames=this.readInt(1);event.subframes=this.readInt(1);return event;case 88:event.subtype="timeSignature";if(length!=4)throw"Length for this timeSignature event was "+length+", but must be 4";event.numerator=this.readInt(1);event.denominator=Math.pow(2,this.readInt(1));event.metronome=this.readInt(1);event.thirtySeconds=this.readInt(1);return event;case 89:event.subtype="keySignature";if(length!=2)throw"Length for this keySignature event was "+length+", but must be 2";event.key=this.readInt(1);if(event.key>127)event.key=128-event.key;event.scale={0:"major",1:"minor"}[this.readInt(1)];return event;case 127:event.subtype="sequencerSpecific";event.data=this.read(length);return event}}else if(firstByte==240){event.type="sysEx";var length=this.readVLQ();event.data=this.read(length);return event}else{event.type="channel";var statusByte,dataByte1;if(firstByte<128){dataByte1=firstByte;statusByte=this.lastStatusByte}else{dataByte1=this.readInt(1);statusByte=firstByte;this.lastStatusByte=statusByte}event.channel=statusByte&15;var eventSubtype=statusByte>>4;switch(eventSubtype){case 8:event.subtype="noteOff";event.pitch=dataByte1;event.velocity=this.readInt(1);return event;case 9:event.pitch=dataByte1;event.velocity=this.readInt(1);event.subtype=event.velocity==0?"noteOff":"noteOn";return event;case 10:event.subtype="aftertouch";event.pitch=dataByte1;event.pressure=this.readInt(1);return event;case 11:event.subtype="controller";event.controller=dataByte1;event.value=this.readInt(1);return event;case 12:event.subtype="program";event.program=dataByte1;return event;case 13:event.subtype="channelPressure";event.pressure=dataByte1;return event;case 14:event.subtype="pitchBend";event.value=(this.readInt(1)<<7)+dataByte1;return event}}};MidiReader.prototype.readChunk=function(){var type=this.read(4);var length=this.readInt(4);var data=this.read(length);return{type:type,length:length,data:data}};MidiReader.prototype.isAtEndOfFile=function(){return this.position>=this.data.length};module.exports=MidiReader},{}]},{},[1]);
+!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.Midi=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+var MidiReader = require('./MidiReader');
+var Track = require ('./Track');
+
+function Midi(data) {
+  var reader = new MidiReader(data);
+
+  var headerChunk = reader.readChunk();
+  var headerReader = new MidiReader(headerChunk.data);
+  this.format = headerReader.readInt(2);
+  if(this.format == 2) throw "MIDI format 2 not supported";
+  var numberOfTracks = headerReader.readInt(2);
+  this.ppqn = headerReader.readInt(2); // assumes metrical timing
+
+  this.tracks = [];
+  for (var i = 0; i < numberOfTracks; i++) {
+    var trackChunk = reader.readChunk();
+    var track = new Track(trackChunk.data);
+    track.midi = this;
+    this.tracks.push(track);
+  }
+};
+
+Midi.prototype = {
+  get notes(){
+    return this.tracks
+      .map(function(track){return track.notes})
+      .reduce(function(a,b){return a.concat(b)});
+  },
+
+  get events(){
+    return this.tracks
+      .map(function(track){return track.events})
+      .reduce(function(a,b){return a.concat(b)});
+  },
+
+  get tempoEvents(){
+    if(this._tempoEvents) return this._tempoEvents; // return if memoized
+
+    // format 0: All events are on the zeroth track, including tempo events
+    // format 1: All tempo events are on the zeroth track
+    // format 2: Every track has tempo events (not supported)
+    return this._tempoEvents = this.tracks[0].events.filter(function(event){
+      return event.subtype == 'setTempo';
+    })
+  }
+};
+
+
+Midi.prototype.tickToSecond = function(tick) {
+  var currentTick = 0;
+  var currentTempo = 500000;
+  var totalTime = 0;
+  for (var i = 0; i < this.tempoEvents.length; i++) {
+    var event = this.tempoEvents[i];
+    if(event.tick >= tick) break;
+    totalTime += ((event.tick - currentTick) / this.ppqn) * currentTempo / 1000000.0;
+    currentTick = event.tick;
+    currentTempo = event.tempo;
+  }
+
+  totalTime += ((tick - currentTick) / this.ppqn) * currentTempo / 1000000.0;
+  return totalTime;
+
+}
+
+
+module.exports = Midi;
+
+},{"./MidiReader":2,"./Track":4}],2:[function(require,module,exports){
+function MidiReader(data) {
+  this.data = data;
+  this.position = 0;
+};
+
+MidiReader.prototype.read = function(length) {
+  var result = this.data.substr(this.position, length);
+  this.position += length;
+  return result;
+}
+
+MidiReader.prototype.readInt = function(numberOfBytes) {
+  var result = 0;
+
+  while(numberOfBytes > 0){
+    result <<= 8;
+    result += this.data.charCodeAt(this.position);
+    this.position += 1;
+    numberOfBytes -= 1;
+  }
+
+  return result;
+}
+
+MidiReader.prototype.readVLQ = function() {
+  var result = 0;
+
+  do {
+    result <<= 7;
+    octet = this.readInt(1);
+    result += (octet & 0x7f);
+  } while (octet & 0x80)
+
+  return result;
+}
+
+MidiReader.prototype.readEvent = function() {
+  var event = {};
+  event.deltaTime = this.readVLQ();
+
+  var firstByte = this.readInt(1);
+  if(firstByte == 0xff){
+    event.type = 'meta';
+    var subtypeByte = this.readInt(1);
+    var length = this.readVLQ();
+    switch(subtypeByte){
+      case 0x00:
+        event.subtype = 'sequenceNumber';
+        if (length != 2) throw "Length for this sequenceNumber event was " + length + ", but must be 2";
+        event.number = this.readInt(2);
+        return event;
+      case 0x01:
+        event.subtype = 'text';
+        event.text = this.read(length);
+        return event;
+      case 0x02:
+        event.subtype = 'copyright';
+        event.text = this.read(length);
+        return event;
+      case 0x03:
+        event.subtype = 'trackName';
+        event.text = this.read(length);
+        return event;
+      case 0x04:
+        event.subtype = 'instrumentName';
+        event.text = this.read(length);
+        return event;
+      case 0x05:
+        event.subtype = 'lyric';
+        event.text = this.read(length);
+        return event;
+      case 0x06:
+        event.subtype = 'marker';
+        event.text = this.read(length);
+        return event;
+      case 0x07:
+        event.subtype = 'cuePoint';
+        event.text = this.read(length);
+        return event;
+      case 0x08:
+        event.subtype = 'programName';
+        event.text = this.read(length);
+        return event;
+      case 0x09:
+        event.subtype = 'deviceName';
+        event.text = this.read(length);
+        return event;
+      case 0x20:
+        event.subtype = 'channelPrefix';
+        event.text = this.readInt(1);
+        if (length != 1) throw "Length for this midiChannelPrefix event was " + length + ", but must be 1";
+        return event;
+      case 0x21:
+        event.subtype = 'port';
+        event.port = this.readInt(1);
+        if (length != 1) throw "Length for this port event was " + length + ", but must be 1";
+        return event;
+      case 0x2f:
+        event.subtype = 'endOfTrack';
+        if (length != 0) throw "Length for this endOfTrack event was " + length + ", but must be 0";
+        return event;
+      case 0x51:
+        event.subtype = 'setTempo';
+        if (length != 3) throw "Length for this setTempo event was " + length + ", but must be 3";
+        event.tempo = this.readInt(3);
+        return event;
+      case 0x54:
+        event.subtype = 'smpteOffset';
+        if (length != 5) throw "Length for this smpteOffset event was " + length + ", but must be 5";
+        var hourByte = this.readInt(1);
+        event.frameRate = {0: 24, 1: 25, 2: 29.97, 3: 30}[hourByte >> 6];
+        event.hours = hourByte & 0x1f;
+        event.minutes = this.readInt(1);
+        event.seconds = this.readInt(1);
+        event.frames = this.readInt(1);
+        event.subframes = this.readInt(1);
+        return event;
+      case 0x58:
+        event.subtype = 'timeSignature';
+        if (length != 4) throw "Length for this timeSignature event was " + length + ", but must be 4";
+        event.numerator = this.readInt(1);
+        event.denominator = Math.pow(2, this.readInt(1));
+        event.metronome = this.readInt(1);
+        event.thirtySeconds = this.readInt(1);
+        return event;
+      case 0x59:
+        event.subtype = 'keySignature';
+        if (length != 2) throw "Length for this keySignature event was " + length + ", but must be 2";
+        event.key = this.readInt(1);
+        if (event.key > 127) event.key = 128 - event.key;
+        event.scale = {0: 'major', 1: 'minor'}[this.readInt(1)];
+        return event;
+      case 0x7f:
+        event.subtype = 'sequencerSpecific';
+        event.data = this.read(length);
+        return event;
+    }
+  } else if(firstByte == 0xf0) {
+    event.type = 'sysEx';
+    var length = this.readVLQ();
+    event.data = this.read(length);
+    return event;
+  } else {
+    event.type = 'channel';
+    var statusByte, dataByte1;
+    if(firstByte < 0x80){ // running status; first byte is the first data byte
+      dataByte1 = firstByte;
+      statusByte = this.lastStatusByte; 
+    } else { // new status; first byte is the status byte
+      dataByte1 = this.readInt(1);
+      statusByte = firstByte;
+      this.lastStatusByte = statusByte;
+    }
+
+    event.channel = statusByte & 0x0f;
+    var eventSubtype = statusByte >> 4;
+    switch(eventSubtype) {
+      case 0x8:
+        event.subtype = 'noteOff';
+        event.pitch = dataByte1;
+        event.velocity = this.readInt(1);
+        return event;
+      case 0x9:
+        event.pitch = dataByte1;
+        event.velocity = this.readInt(1);
+        event.subtype = (event.velocity==0 ? 'noteOff' : 'noteOn')
+        return event;
+      case 0xa:
+        event.subtype = 'aftertouch';
+        event.pitch = dataByte1;
+        event.pressure = this.readInt(1);
+        return event;
+      case 0xb:
+        event.subtype = 'controller';
+        event.controller = dataByte1;
+        event.value = this.readInt(1);
+        return event;
+      case 0xc:
+        event.subtype = 'program';
+        event.program = dataByte1;
+        return event;
+      case 0xd:
+        event.subtype = 'channelPressure';
+        event.pressure = dataByte1;
+        return event;
+      case 0xe:
+        event.subtype = 'pitchBend';
+        event.value = (this.readInt(1) << 7) + dataByte1
+        return event;
+    }    
+  }
+
+
+
+
+
+}
+
+
+MidiReader.prototype.readChunk = function(){
+  var type = this.read(4);
+  var length = this.readInt(4);
+  var data = this.read(length);
+  return {
+    type: type,
+    length: length,
+    data: data,
+  };
+};
+
+MidiReader.prototype.isAtEndOfFile = function(){
+  return this.position >= this.data.length;
+}
+
+module.exports = MidiReader;
+
+},{}],3:[function(require,module,exports){
+function Note(onEvent, offEvent) {
+  this.pitch = onEvent.pitch;
+  this.onTick = onEvent.tick;
+  this.offTick = offEvent.tick;
+
+  Object.defineProperty(this, 'midi', {
+    get: function() {
+      return this.track.midi;
+    }
+  });
+
+  Object.defineProperty(this, 'onSecond', {
+    get: function() {
+      return this.midi.tickToSecond(this.onTick);
+    }
+  });
+
+  Object.defineProperty(this, 'offSecond', {
+    get: function() {
+      return this.midi.tickToSecond(this.offTick);
+    }
+  });
+
+
+};
+
+module.exports = Note;
+},{}],4:[function(require,module,exports){
+var MidiReader = require('./MidiReader');
+var Note = require('./Note');
+
+function Track(data) {
+  this.events = [];
+  this.notes = [];
+
+  var reader = new MidiReader(data);
+  var noteOnEvents = {}
+  var currentTick = 0;
+  while (!reader.isAtEndOfFile()) {
+    var event = reader.readEvent();
+    currentTick += event.deltaTime;
+    event.tick  = currentTick;
+    this.events.push(event);
+    switch(event.subtype){
+      case 'noteOn':
+        noteOnEvents[event.pitch] = event;
+        break;
+      case 'noteOff':
+        if (noteOnEvents[event.pitch] === undefined) throw "noteOff event without corresponding noteOn event";
+        var noteOnEvent = noteOnEvents[event.pitch];
+        var note = new Note(noteOnEvent, event);
+        note.track = this;
+        this.notes.push(note);
+        break;
+    }
+  }
+
+}
+
+
+
+module.exports = Track;
+
+},{"./MidiReader":2,"./Note":3}]},{},[1])(1)
+});
