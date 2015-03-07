@@ -42,7 +42,14 @@ Midi.prototype = {
     return this._tempoEvents = this.tracks[0].events.filter(function(event){
       return event.subtype == 'setTempo';
     })
-  }
+  },
+
+  get duration(){
+    return this.notes
+      .map(function(note){return note.offSecond})
+      .reduce(function(a,b){return Math.max(a,b)})
+  },
+
 };
 
 

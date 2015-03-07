@@ -62,4 +62,8 @@ describe('Midi', function(){
     expect(cScaleMidi.tempoEvents.length).to.equal(2);
   });
 
+  it('#duration should return the duration of this Midi in seconds', function(){
+    expect(cScaleMidi.duration).to.equal(2.9375);
+  });
+
 })
