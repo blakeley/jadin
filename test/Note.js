@@ -39,5 +39,9 @@ describe('Note', function(){
     expect(cScaleMidi.tracks[1].notes[0].offSecond).to.equal(2.1875);    
   });
 
+  it('#duration should return the duration of this Note in seconds', function(){
+    expect(cScaleMidi.tracks[1].notes[0].duration).to.equal(0.25);
+  });
+
 
 })

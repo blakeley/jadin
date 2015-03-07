@@ -60,6 +60,6 @@ describe('Midi', function(){
   it('#tempoEvents should return all setTempo events', function(){
     expect(cScaleMidi.tempoEvents).to.not.be.undefined;
     expect(cScaleMidi.tempoEvents.length).to.equal(2);
-  })
+  });
 
 })

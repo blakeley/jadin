@@ -21,6 +21,12 @@ function Note(onEvent, offEvent) {
     }
   });
 
+  Object.defineProperty(this, 'duration', {
+    get: function() {
+      return this.offSecond - this.onSecond;
+    }
+  });
+
 
 };
 
