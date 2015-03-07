@@ -43,7 +43,14 @@ Midi.prototype = {
     return this._tempoEvents = this.tracks[0].events.filter(function(event){
       return event.subtype == 'setTempo';
     })
-  }
+  },
+
+  get duration(){
+    return this.notes
+      .map(function(note){return note.offSecond})
+      .reduce(function(a,b){return Math.max(a,b)})
+  },
+
 };
 
 
@@ -305,6 +312,12 @@ function Note(onEvent, offEvent) {
   Object.defineProperty(this, 'offSecond', {
     get: function() {
       return this.midi.tickToSecond(this.offTick);
+    }
+  });
+
+  Object.defineProperty(this, 'duration', {
+    get: function() {
+      return this.offSecond - this.onSecond;
     }
   });
 
