@@ -94,14 +94,14 @@ describe('MidiReader', function(){
   });
 
   it('#readEvent should read a noteOff event', function(){
-    // deltaTime, 8n, pitch, velocity 
+    // deltaTime, 8n, number, velocity 
     var reader = new MidiReader('\x00\x81\x3c\x32');
     var event = reader.readEvent();
     expect(event.deltaTime).to.equal(0);
     expect(event.type).to.equal('channel');
     expect(event.subtype).to.equal('noteOff');
     expect(event.channel).to.equal(1);
-    expect(event.pitch).to.equal(60);
+    expect(event.number).to.equal(60);
     expect(event.velocity).to.equal(50);
   });
 
@@ -113,19 +113,19 @@ describe('MidiReader', function(){
     expect(event.type).to.equal('channel');
     expect(event.subtype).to.equal('noteOff');
     expect(event.channel).to.equal(1);
-    expect(event.pitch).to.equal(61);
+    expect(event.number).to.equal(61);
     expect(event.velocity).to.equal(51);
   });
 
   it('#readEvent should read a noteOn event', function(){
-    // deltaTime, 9n, pitch, velocity
+    // deltaTime, 9n, number, velocity
     var reader = new MidiReader('\x00\x91\x3e\x34');
     var event = reader.readEvent();
     expect(event.deltaTime).to.equal(0);
     expect(event.type).to.equal('channel');
     expect(event.subtype).to.equal('noteOn');
     expect(event.channel).to.equal(1);
-    expect(event.pitch).to.equal(62);
+    expect(event.number).to.equal(62);
     expect(event.velocity).to.equal(52);
   });
 
@@ -136,19 +136,19 @@ describe('MidiReader', function(){
     expect(event.type).to.equal('channel');
     expect(event.subtype).to.equal('noteOff');
     expect(event.channel).to.equal(1);
-    expect(event.pitch).to.equal(63);
+    expect(event.number).to.equal(63);
     expect(event.velocity).to.equal(0);
   });
 
   it('#readEvent should read an aftertouch event', function(){
-    // deltaTime, an, pitch, pressure
+    // deltaTime, an, number, pressure
     var reader = new MidiReader('\x00\xa1\x40\x35');
     var event = reader.readEvent();
     expect(event.deltaTime).to.equal(0);
     expect(event.type).to.equal('channel');
     expect(event.subtype).to.equal('aftertouch');
     expect(event.channel).to.equal(1);
-    expect(event.pitch).to.equal(64);
+    expect(event.number).to.equal(64);
     expect(event.pressure).to.equal(53);    
   });
 

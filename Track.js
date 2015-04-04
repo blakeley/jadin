@@ -15,11 +15,11 @@ function Track(data) {
     this.events.push(event);
     switch(event.subtype){
       case 'noteOn':
-        noteOnEvents[event.pitch] = event;
+        noteOnEvents[event.number] = event;
         break;
       case 'noteOff':
-        if (noteOnEvents[event.pitch] === undefined) throw "noteOff event without corresponding noteOn event";
-        var noteOnEvent = noteOnEvents[event.pitch];
+        if (noteOnEvents[event.number] === undefined) throw "noteOff event without corresponding noteOn event";
+        var noteOnEvent = noteOnEvents[event.number];
         var note = new Note(noteOnEvent, event);
         note.track = this;
         this.notes.push(note);

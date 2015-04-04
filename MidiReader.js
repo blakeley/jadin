@@ -157,17 +157,17 @@ MidiReader.prototype.readEvent = function() {
     switch(eventSubtype) {
       case 0x8:
         event.subtype = 'noteOff';
-        event.pitch = dataByte1;
+        event.number = dataByte1;
         event.velocity = this.readInt(1);
         return event;
       case 0x9:
-        event.pitch = dataByte1;
+        event.number = dataByte1;
         event.velocity = this.readInt(1);
         event.subtype = (event.velocity==0 ? 'noteOff' : 'noteOn')
         return event;
       case 0xa:
         event.subtype = 'aftertouch';
-        event.pitch = dataByte1;
+        event.number = dataByte1;
         event.pressure = this.readInt(1);
         return event;
       case 0xb:

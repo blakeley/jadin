@@ -11,8 +11,8 @@ describe('Note', function(){
     expect(new Note({}, {})).to.not.be.null();
   });
 
-  it('#pitch should return this note\'s pitch', function(){
-    expect(cScaleMidi.tracks[1].notes[0].pitch).to.equal(65);
+  it('#number should return this note\'s MIDI number', function(){
+    expect(cScaleMidi.tracks[1].notes[0].number).to.equal(65);
   });
 
   it('#track should return the associated Track object', function(){

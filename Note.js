@@ -1,5 +1,5 @@
 function Note(onEvent, offEvent) {
-  this.pitch = onEvent.pitch;
+  this.number = onEvent.number;
   this.onTick = onEvent.tick;
   this.offTick = offEvent.tick;
 

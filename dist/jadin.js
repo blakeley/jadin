@@ -234,17 +234,17 @@ MidiReader.prototype.readEvent = function() {
     switch(eventSubtype) {
       case 0x8:
         event.subtype = 'noteOff';
-        event.pitch = dataByte1;
+        event.number = dataByte1;
         event.velocity = this.readInt(1);
         return event;
       case 0x9:
-        event.pitch = dataByte1;
+        event.number = dataByte1;
         event.velocity = this.readInt(1);
         event.subtype = (event.velocity==0 ? 'noteOff' : 'noteOn')
         return event;
       case 0xa:
         event.subtype = 'aftertouch';
-        event.pitch = dataByte1;
+        event.number = dataByte1;
         event.pressure = this.readInt(1);
         return event;
       case 0xb:
@@ -293,7 +293,7 @@ module.exports = MidiReader;
 
 },{}],3:[function(require,module,exports){
 function Note(onEvent, offEvent) {
-  this.pitch = onEvent.pitch;
+  this.number = onEvent.number;
   this.onTick = onEvent.tick;
   this.offTick = offEvent.tick;
 
@@ -343,11 +343,11 @@ function Track(data) {
     this.events.push(event);
     switch(event.subtype){
       case 'noteOn':
-        noteOnEvents[event.pitch] = event;
+        noteOnEvents[event.number] = event;
         break;
       case 'noteOff':
-        if (noteOnEvents[event.pitch] === undefined) throw "noteOff event without corresponding noteOn event";
-        var noteOnEvent = noteOnEvents[event.pitch];
+        if (noteOnEvents[event.number] === undefined) throw "noteOff event without corresponding noteOn event";
+        var noteOnEvent = noteOnEvents[event.number];
         var note = new Note(noteOnEvent, event);
         note.track = this;
         this.notes.push(note);
