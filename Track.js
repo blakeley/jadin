@@ -27,6 +27,12 @@ function Track(data) {
     }
   }
 
+  Object.defineProperty(this, 'index', {
+    get: function() {
+      return this.midi.tracks.indexOf(this);
+    }
+  });
+
 }
 
 

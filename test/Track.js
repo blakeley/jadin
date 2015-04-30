@@ -29,4 +29,10 @@ describe('Track', function(){
     expect(cScaleMidi.tracks[1].midi).to.equal(cScaleMidi);
   });
 
+  it('#index should return the index of this track', function(){
+    expect(cScaleMidi.tracks[0].index).to.equal(0);
+    expect(cScaleMidi.tracks[1].index).to.equal(1);
+    expect(cScaleMidi.tracks[2].index).to.equal(2);
+  });
+
 })
