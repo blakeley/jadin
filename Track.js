@@ -32,9 +32,12 @@ function Track(data) {
       return this.midi.tracks.indexOf(this);
     }
   });
-
 }
 
-
+Track.prototype.notesOnDuring = function(second){
+  return this.notes.filter(function(note){
+    return note.onDuring(second);
+  });
+};
 
 module.exports = Track;
