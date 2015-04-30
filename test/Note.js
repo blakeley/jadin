@@ -43,5 +43,16 @@ describe('Note', function(){
     expect(cScaleMidi.tracks[1].notes[0].duration).to.equal(0.25);
   });
 
+  it('#onDuring should return true when a note is played during the given second', function(){
+    expect(cScaleMidi.tracks[2].notes[0].onDuring(0)).to.be.true;
+    expect(cScaleMidi.tracks[2].notes[0].onDuring(0.25)).to.be.true;
+    expect(cScaleMidi.tracks[2].notes[0].onDuring(0.50)).to.be.true;
+  });
+
+  it('#onDuring should return false when a note is not played during the given second', function(){
+    expect(cScaleMidi.tracks[2].notes[0].onDuring(-1)).to.be.false;
+    expect(cScaleMidi.tracks[2].notes[0].onDuring(1)).to.be.false;
+  });
+
 
 })

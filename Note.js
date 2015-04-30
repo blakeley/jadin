@@ -26,8 +26,10 @@ function Note(onEvent, offEvent) {
       return this.offSecond - this.onSecond;
     }
   });
+};
 
-
+Note.prototype.onDuring = function(second){
+  return this.onSecond <= second && second <= this.offSecond;  
 };
 
 module.exports = Note;
