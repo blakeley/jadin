@@ -53,6 +53,4 @@ describe('Note', function(){
     expect(cScaleMidi.tracks[2].notes[0].onDuring(-1)).to.be.false;
     expect(cScaleMidi.tracks[2].notes[0].onDuring(1)).to.be.false;
   });
-
-
-})
+});

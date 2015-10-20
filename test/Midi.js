@@ -1,6 +1,6 @@
+var expect = require('chai').expect;
 var Midi = require('../Midi');
 var fs = require('fs');
-var expect = require('chai').expect;
 
 var cScaleData = fs.readFileSync('fixtures/c.mid', 'binary');
 var cScaleMidi = new Midi(cScaleData);
@@ -66,4 +66,12 @@ describe('Midi', function(){
     expect(cScaleMidi.duration).to.equal(2.9375);
   });
 
-})
+  it('#notesOnDuring should return all notes on during the given second', function(){
+    expect(cScaleMidi.notesOnDuring(-1).length).to.equal(0);
+    expect(cScaleMidi.notesOnDuring(.50).length).to.equal(2);
+    expect(cScaleMidi.notesOnDuring(.50)[0]).to.equal(cScaleMidi.tracks[2].notes[0]);
+    expect(cScaleMidi.notesOnDuring(1.9375).length).to.equal(2);
+    expect(cScaleMidi.notesOnDuring(1.9375)[0]).to.equal(cScaleMidi.tracks[1].notes[0]);
+    expect(cScaleMidi.notesOnDuring(1.9375)[1]).to.equal(cScaleMidi.tracks[2].notes[3]);
+  });
+});

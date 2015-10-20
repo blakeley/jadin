@@ -49,9 +49,7 @@ Midi.prototype = {
       .map(function(note){return note.offSecond})
       .reduce(function(a,b){return Math.max(a,b)})
   },
-
 };
-
 
 Midi.prototype.tickToSecond = function(tick) {
   var currentTick = 0;
@@ -67,8 +65,12 @@ Midi.prototype.tickToSecond = function(tick) {
 
   totalTime += ((tick - currentTick) / this.ppqn) * currentTempo / 1000000.0;
   return totalTime;
+};
 
-}
-
+Midi.prototype.notesOnDuring = function(second) {
+  return [].concat.apply([], this.tracks.map(function(track){
+    return track.notesOnDuring(second);
+  }));
+};
 
 module.exports = Midi;
