@@ -68,9 +68,15 @@ Midi.prototype.tickToSecond = function(tick) {
   return totalTime;
 };
 
-Midi.prototype.notesOnDuring = function(second) {
+Midi.prototype.notesOnAt = function(second) {
   return [].concat.apply([], this.tracks.map(function(track){
-    return track.notesOnDuring(second);
+    return track.notesOnAt(second);
+  }));
+};
+
+Midi.prototype.notesOnDuring = function(onSecond, offSecond) {
+  return [].concat.apply([], this.tracks.map(function(track){
+    return track.notesOnDuring(onSecond, offSecond);
   }));
 };
 
@@ -324,9 +330,15 @@ function Note(onEvent, offEvent) {
   });
 };
 
-Note.prototype.onDuring = function(second){
+Note.prototype.onAt = function(second){
   return this.onSecond <= second && second <= this.offSecond;  
 };
+
+Note.prototype.onDuring = function(onSecond, offSecond){
+  return this.onSecond <= offSecond && this.offSecond >= onSecond;
+};
+
+
 
 module.exports = Note;
 
@@ -367,11 +379,19 @@ function Track(data) {
   });
 }
 
-Track.prototype.notesOnDuring = function(second){
+Track.prototype.notesOnAt = function(second){
   return this.notes.filter(function(note){
-    return note.onDuring(second);
+    return note.onAt(second);
   });
 };
+
+Track.prototype.notesOnDuring = function(onSecond, offSecond){
+  return this.notes.filter(function(note){
+    return note.onDuring(onSecond, offSecond);
+  });
+};
+
+
 
 module.exports = Track;
 

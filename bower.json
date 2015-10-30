@@ -1,0 +1,21 @@
+{
+  "name": "jadin",
+  "description": "A library for parsing MIDI files",
+  "main": "dist/jadin.js",
+  "authors": [
+    "Brandon Blakeley"
+  ],
+  "license": "",
+  "keywords": [
+    "MIDI"
+  ],
+  "homepage": "https://github.com/blakeley/jadin",
+  "moduleType": [],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
