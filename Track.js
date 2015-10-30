@@ -40,4 +40,12 @@ Track.prototype.notesOnAt = function(second){
   });
 };
 
+Track.prototype.notesOnDuring = function(onSecond, offSecond){
+  return this.notes.filter(function(note){
+    return note.onDuring(onSecond, offSecond);
+  });
+};
+
+
+
 module.exports = Track;

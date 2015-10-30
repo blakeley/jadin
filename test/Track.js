@@ -43,4 +43,16 @@ describe('Track', function(){
     expect(cScaleMidi.tracks[1].notesOnAt(1.9375).length).to.equal(1);
   });
 
+  it('#index should return the index of this track', function(){
+    expect(cScaleMidi.tracks[0].index).to.equal(0);
+    expect(cScaleMidi.tracks[1].index).to.equal(1);
+    expect(cScaleMidi.tracks[2].index).to.equal(2);
+  });
+
+  it('#notesOnDuring should return the notes on this track which are on during the given time range', function(){
+    expect(cScaleMidi.tracks[2].notesOnDuring(-2,-1).length).to.equal(0);
+    expect(cScaleMidi.tracks[2].notesOnDuring(0,0.75).length).to.equal(2);
+    expect(cScaleMidi.tracks[2].notesOnDuring(0,0.75)[0]).to.equal(cScaleMidi.tracks[2].notes[0]);
+    expect(cScaleMidi.tracks[2].notesOnDuring(0,2).length).to.equal(4);
+  });
 })
