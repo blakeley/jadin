@@ -34,9 +34,9 @@ function Track(data) {
   });
 }
 
-Track.prototype.notesOnDuring = function(second){
+Track.prototype.notesOnAt = function(second){
   return this.notes.filter(function(note){
-    return note.onDuring(second);
+    return note.onAt(second);
   });
 };
 

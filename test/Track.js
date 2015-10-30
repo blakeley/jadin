@@ -35,12 +35,12 @@ describe('Track', function(){
     expect(cScaleMidi.tracks[2].index).to.equal(2);
   });
 
-  it('#notesOnDuring should return the notes on this track which are on during the given second', function(){
-    expect(cScaleMidi.tracks[2].notesOnDuring(-1).length).to.equal(0);
-    expect(cScaleMidi.tracks[2].notesOnDuring(.50).length).to.equal(2);
-    expect(cScaleMidi.tracks[2].notesOnDuring(.50)[0]).to.equal(cScaleMidi.tracks[2].notes[0]);
-    expect(cScaleMidi.tracks[2].notesOnDuring(1.9375).length).to.equal(1);
-    expect(cScaleMidi.tracks[1].notesOnDuring(1.9375).length).to.equal(1);
+  it('#notesOnAt should return the notes on this track which are on at the given time', function(){
+    expect(cScaleMidi.tracks[2].notesOnAt(-1).length).to.equal(0);
+    expect(cScaleMidi.tracks[2].notesOnAt(.50).length).to.equal(2);
+    expect(cScaleMidi.tracks[2].notesOnAt(.50)[0]).to.equal(cScaleMidi.tracks[2].notes[0]);
+    expect(cScaleMidi.tracks[2].notesOnAt(1.9375).length).to.equal(1);
+    expect(cScaleMidi.tracks[1].notesOnAt(1.9375).length).to.equal(1);
   });
 
 })

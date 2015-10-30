@@ -67,9 +67,9 @@ Midi.prototype.tickToSecond = function(tick) {
   return totalTime;
 };
 
-Midi.prototype.notesOnDuring = function(second) {
+Midi.prototype.notesOnAt = function(second) {
   return [].concat.apply([], this.tracks.map(function(track){
-    return track.notesOnDuring(second);
+    return track.notesOnAt(second);
   }));
 };
 

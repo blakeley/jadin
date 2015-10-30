@@ -28,7 +28,7 @@ function Note(onEvent, offEvent) {
   });
 };
 
-Note.prototype.onDuring = function(second){
+Note.prototype.onAt = function(second){
   return this.onSecond <= second && second <= this.offSecond;  
 };
 
