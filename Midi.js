@@ -73,4 +73,10 @@ Midi.prototype.notesOnAt = function(second) {
   }));
 };
 
+Midi.prototype.notesOnDuring = function(onSecond, offSecond) {
+  return [].concat.apply([], this.tracks.map(function(track){
+    return track.notesOnDuring(onSecond, offSecond);
+  }));
+};
+
 module.exports = Midi;

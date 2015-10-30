@@ -74,4 +74,13 @@ describe('Midi', function(){
     expect(cScaleMidi.notesOnAt(1.9375)[0]).to.equal(cScaleMidi.tracks[1].notes[0]);
     expect(cScaleMidi.notesOnAt(1.9375)[1]).to.equal(cScaleMidi.tracks[2].notes[3]);
   });
+
+  it('#notesOnDuring should return all notes on at the given second', function(){
+    expect(cScaleMidi.notesOnDuring(-2,-1).length).to.equal(0);
+    expect(cScaleMidi.notesOnDuring(0,0.75).length).to.equal(2);
+    expect(cScaleMidi.notesOnDuring(0,0.75)[0]).to.equal(cScaleMidi.tracks[2].notes[0]);
+    expect(cScaleMidi.notesOnDuring(0,2).length).to.equal(5);
+    expect(cScaleMidi.notesOnDuring(0,2)[0]).to.equal(cScaleMidi.tracks[1].notes[0]);
+    expect(cScaleMidi.notesOnDuring(0,2)[1]).to.equal(cScaleMidi.tracks[2].notes[0]);
+  });
 });
