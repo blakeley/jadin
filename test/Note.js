@@ -43,14 +43,26 @@ describe('Note', function(){
     expect(cScaleMidi.tracks[1].notes[0].duration).to.equal(0.25);
   });
 
-  it('#onAt should return true when a note is played at the given second', function(){
+  it('#onAt should return true when a note is on at the given second', function(){
     expect(cScaleMidi.tracks[2].notes[0].onAt(0)).to.be.true;
     expect(cScaleMidi.tracks[2].notes[0].onAt(0.25)).to.be.true;
     expect(cScaleMidi.tracks[2].notes[0].onAt(0.50)).to.be.true;
   });
 
-  it('#onAt should return false when a note is not played at the given second', function(){
+  it('#onAt should return false when a note is not on at the given second', function(){
     expect(cScaleMidi.tracks[2].notes[0].onAt(-1)).to.be.false;
     expect(cScaleMidi.tracks[2].notes[0].onAt(1)).to.be.false;
+  });
+
+  it('#onDuring should return true when a note is on during the given time range', function(){
+    expect(cScaleMidi.tracks[2].notes[0].onDuring(-0.50, 0)).to.be.true;
+    expect(cScaleMidi.tracks[2].notes[0].onDuring(0, 0.50)).to.be.true;
+    expect(cScaleMidi.tracks[2].notes[0].onDuring(0.50, 1)).to.be.true;
+  });
+
+  it('#onDuring should return false when a note is not on during the given time range', function(){
+    expect(cScaleMidi.tracks[2].notes[0].onDuring(-1, -.01)).to.be.false;
+    expect(cScaleMidi.tracks[2].notes[0].onDuring(0.51, 1)).to.be.false;
+    expect(cScaleMidi.tracks[2].notes[0].onDuring(20, 30)).to.be.false;
   });
 });

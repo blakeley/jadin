@@ -32,4 +32,10 @@ Note.prototype.onAt = function(second){
   return this.onSecond <= second && second <= this.offSecond;  
 };
 
+Note.prototype.onDuring = function(onSecond, offSecond){
+  return this.onSecond <= offSecond && this.offSecond >= onSecond;
+};
+
+
+
 module.exports = Note;
