@@ -19,6 +19,8 @@ function Midi(data) {
     track.midi = this;
     this.tracks.push(track);
   }
+
+  this._tickToSecond = {};
 };
 
 Midi.prototype = {
@@ -53,6 +55,8 @@ Midi.prototype = {
 };
 
 Midi.prototype.tickToSecond = function(tick) {
+  if(this._tickToSecond[tick]) return this._tickToSecond[tick]
+
   var currentTick = 0;
   var currentTempo = 500000;
   var totalTime = 0;
@@ -65,7 +69,7 @@ Midi.prototype.tickToSecond = function(tick) {
   }
 
   totalTime += ((tick - currentTick) / this.ppqn) * currentTempo / 1000000.0;
-  return totalTime;
+  return this._tickToSecond[tick] = totalTime;
 };
 
 Midi.prototype.notesOnAt = function(second) {
