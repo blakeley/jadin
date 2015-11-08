@@ -29,6 +29,13 @@ describe('Midi', function(){
     expect(cScaleMidi.tracks.length).to.equal(3);
   });
 
+  it('#createTrack should create a new track', function(){
+    const defaultMidi = new Midi();
+    expect(defaultMidi.tracks.length).to.equal(1);
+    defaultMidi.createTrack();
+    expect(defaultMidi.tracks.length).to.equal(2);    
+  });
+
   it('#events should return an array of all events', function(){
     expect(cScaleMidi.events).to.not.be.undefined();
     expect(cScaleMidi.events.length).to.equal(28);

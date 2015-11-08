@@ -20,11 +20,18 @@ export default class Midi {
 
       for (let i = 0; i < numberOfTracks; i++) {
         const trackChunk = reader.readChunk();
-        const track = new Track(trackChunk.data);
-        track.midi = this;
-        this.tracks.push(track);
+        this.createTrack(trackChunk.data);
       }
+    } else {
+      const tempoTrack = this.createTrack();
     }
+  }
+
+  createTrack(data) {
+    const track = new Track(data);
+    track.midi = this;
+    this.tracks.push(track);
+    return track;
   }
 
   get notes() {
