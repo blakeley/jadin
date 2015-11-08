@@ -3,14 +3,15 @@ import Note from './Note';
 
 export default class Track {
   constructor(data) {
+    data = data || '';
     this.events = [];
     this.notes = [];
 
-    var reader = new MidiReader(data);
-    var noteOnEvents = {}
-    var currentTick = 0;
+    let reader = new MidiReader(data);
+    let noteOnEvents = {}
+    let currentTick = 0;
     while (!reader.isAtEndOfFile()) {
-      var event = reader.readEvent();
+      const event = reader.readEvent();
       currentTick += event.deltaTime;
       event.tick  = currentTick;
       this.events.push(event);
@@ -20,8 +21,8 @@ export default class Track {
           break;
         case 'noteOff':
           if (noteOnEvents[event.number] === undefined) throw "noteOff event without corresponding noteOn event";
-          var noteOnEvent = noteOnEvents[event.number];
-          var note = new Note(noteOnEvent, event);
+          const noteOnEvent = noteOnEvents[event.number];
+          const note = new Note(noteOnEvent, event);
           note.track = this;
           this.notes.push(note);
           break;

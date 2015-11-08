@@ -9,8 +9,13 @@ var cScaleData = fs.readFileSync('fixtures/c.mid', 'binary');
 var cScaleMidi = new Midi(cScaleData);
 
 describe('Track', function(){
-  it('should construct a Track instance', function(){
-    expect(new Track('')).to.not.be.null()
+  it('#contsructor should construct a Track instance given binary track data', function(){
+    expect(new Track('\x00\x91\x3e\x34\x00\x81\x3e\x34')).to.not.be.null();
+  });
+
+  it('#constructor should construct a Track instance given no arguments', function(){
+    const defaultTrack = new Track();
+    expect(new Track()).to.not.be.null();
   });
 
   it('#events should return an array of all events', function(){
