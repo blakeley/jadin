@@ -1,9 +1,9 @@
-var Track = require('../Track');
-var MidiReader = require('../MidiReader')
-var Midi = require('../Midi');
-var Note = require('../Note');
-var fs = require('fs');
-var expect = require('chai').expect;
+import Track from '../src/Track';
+import MidiReader from '../src/MidiReader';
+import Midi from '../src/Midi';
+import Note from '../src/Note';
+import {expect} from 'chai';
+import fs from 'fs';
 
 var cScaleData = fs.readFileSync('fixtures/c.mid', 'binary');
 var cScaleMidi = new Midi(cScaleData);

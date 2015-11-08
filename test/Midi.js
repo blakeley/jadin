@@ -1,9 +1,9 @@
-var expect = require('chai').expect;
-var Midi = require('../Midi');
-var fs = require('fs');
+import Midi from '../src/Midi';
+import {expect} from 'chai';
+import fs from 'fs';
 
-var cScaleData = fs.readFileSync('fixtures/c.mid', 'binary');
-var cScaleMidi = new Midi(cScaleData);
+const cScaleData = fs.readFileSync('./fixtures/c.mid', 'binary');
+const cScaleMidi = new Midi(cScaleData);
 
 describe('Midi', function(){
   it('should construct a Midi instance', function(){

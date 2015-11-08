@@ -1,7 +1,7 @@
-var Midi = require('../Midi');
-var Note = require('../Note');
-var fs = require('fs');
-var expect = require('chai').expect;
+import Midi from '../src/Midi';
+import Note from '../src/Note';
+import {expect} from 'chai';
+import fs from 'fs';
 
 var cScaleData = fs.readFileSync('fixtures/c.mid', 'binary');
 var cScaleMidi = new Midi(cScaleData);
