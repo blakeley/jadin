@@ -3,24 +3,28 @@ import Track from './Track';
 
 export default class Midi {
   constructor(data) {
-    var reader = new MidiReader(data);
-
-    var headerChunk = reader.readChunk();
-    var headerReader = new MidiReader(headerChunk.data);
-    this.format = headerReader.readInt(2);
-    if(this.format == 2) throw "MIDI format 2 not supported";
-    var numberOfTracks = headerReader.readInt(2);
-    this.ppqn = headerReader.readInt(2); // assumes metrical timing
-
+    this.format = 0;
+    this.ppqn = 480;
     this.tracks = [];
-    for (var i = 0; i < numberOfTracks; i++) {
-      var trackChunk = reader.readChunk();
-      var track = new Track(trackChunk.data);
-      track.midi = this;
-      this.tracks.push(track);
-    }
-
     this._tickToSecond = {};
+
+    if(!!data){
+      const reader = new MidiReader(data);
+
+      const headerChunk = reader.readChunk();
+      const headerReader = new MidiReader(headerChunk.data);
+      this.format = headerReader.readInt(2);
+      if(this.format == 2) throw "MIDI format 2 not supported";
+      const numberOfTracks = headerReader.readInt(2);
+      this.ppqn = headerReader.readInt(2); // assumes metrical timing
+
+      for (let i = 0; i < numberOfTracks; i++) {
+        const trackChunk = reader.readChunk();
+        const track = new Track(trackChunk.data);
+        track.midi = this;
+        this.tracks.push(track);
+      }
+    }
   }
 
   get notes() {

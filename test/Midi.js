@@ -6,8 +6,15 @@ const cScaleData = fs.readFileSync('./fixtures/c.mid', 'binary');
 const cScaleMidi = new Midi(cScaleData);
 
 describe('Midi', function(){
-  it('should construct a Midi instance', function(){
+  it('#constructor should construct a Midi instance given binary data', function(){
     expect(cScaleMidi).to.not.be.null()
+  });
+
+  it('#constructor should construct a default Midi instance given no arguments', function() {
+    const defaultMidi = new Midi();
+    expect(defaultMidi).to.not.be.null();
+    expect(defaultMidi.format).to.equal(0);
+    expect(defaultMidi.ppqn).to.equal(480);
   });
 
   it('#format should return the MIDI format', function(){
