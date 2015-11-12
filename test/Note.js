@@ -8,7 +8,7 @@ var cScaleMidi = new Midi(cScaleData);
 
 describe('Note', function(){
   it('should construct a Note instance', function(){
-    expect(new Note({}, {})).to.not.be.null();
+    expect(new Note()).to.not.be.null();
   });
 
   it('#number should return this note\'s MIDI number', function(){
@@ -25,6 +25,24 @@ describe('Note', function(){
 
   it('#onTick should return the MIDI tick starting this Note', function(){
     expect(cScaleMidi.tracks[1].notes[0].onTick).to.equal(1920);    
+  });
+
+  it('#onTick= should not set the onTick to be greater than the offTick', function(){
+    const note = new Note(60, 2, 4)
+    try {
+      note.onTick = 5;
+    } catch(e) {
+      expect(note.onTick).to.equal(2);
+    }
+  });
+
+  it('#offTick= should not set the offTick to be less than the onTick', function(){
+    const note = new Note(60, 2, 4)
+    try {
+      note.offTick = 1;
+    } catch(e) {
+      expect(note.offTick).to.equal(4);
+    }
   });
 
   it('#offTick should return the MIDI tick ending this Note', function(){

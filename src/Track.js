@@ -2,8 +2,7 @@ import MidiReader from './MidiReader';
 import Note from './Note';
 
 export default class Track {
-  constructor(data) {
-    data = data || '';
+  constructor(data='') {
     this.events = [];
     this.notes = [];
 
@@ -22,7 +21,7 @@ export default class Track {
         case 'noteOff':
           if (noteOnEvents[event.number] === undefined) throw "noteOff event without corresponding noteOn event";
           const noteOnEvent = noteOnEvents[event.number];
-          const note = new Note(noteOnEvent, event);
+          const note = new Note(event.number, noteOnEvent.tick, event.tick);
           note.track = this;
           this.notes.push(note);
           break;
