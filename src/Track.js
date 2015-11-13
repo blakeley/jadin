@@ -21,12 +21,16 @@ export default class Track {
         case 'noteOff':
           if (noteOnEvents[event.number] === undefined) throw "noteOff event without corresponding noteOn event";
           const noteOnEvent = noteOnEvents[event.number];
-          const note = new Note(event.number, noteOnEvent.tick, event.tick);
-          note.track = this;
-          this.notes.push(note);
+          this.createNote(event.number, noteOnEvent.tick, event.tick)
           break;
       }
     }
+  }
+
+  createNote(number, onTick, offTick) {
+    const note = new Note(number, onTick, offTick);
+    note.track = this;
+    this.notes.push(note);
   }
 
   get index() {

@@ -22,27 +22,39 @@ var Midi = (function () {
   function Midi(data) {
     _classCallCheck(this, Midi);
 
-    var reader = new _MidiReader2['default'](data);
-
-    var headerChunk = reader.readChunk();
-    var headerReader = new _MidiReader2['default'](headerChunk.data);
-    this.format = headerReader.readInt(2);
-    if (this.format == 2) throw "MIDI format 2 not supported";
-    var numberOfTracks = headerReader.readInt(2);
-    this.ppqn = headerReader.readInt(2); // assumes metrical timing
-
+    this.format = 0;
+    this.ppqn = 480;
     this.tracks = [];
-    for (var i = 0; i < numberOfTracks; i++) {
-      var trackChunk = reader.readChunk();
-      var track = new _Track2['default'](trackChunk.data);
-      track.midi = this;
-      this.tracks.push(track);
-    }
-
     this._tickToSecond = {};
+
+    if (!!data) {
+      var reader = new _MidiReader2['default'](data);
+
+      var headerChunk = reader.readChunk();
+      var headerReader = new _MidiReader2['default'](headerChunk.data);
+      this.format = headerReader.readInt(2);
+      if (this.format == 2) throw "MIDI format 2 not supported";
+      var numberOfTracks = headerReader.readInt(2);
+      this.ppqn = headerReader.readInt(2); // assumes metrical timing
+
+      for (var i = 0; i < numberOfTracks; i++) {
+        var trackChunk = reader.readChunk();
+        this.createTrack(trackChunk.data);
+      }
+    } else {
+      var tempoTrack = this.createTrack();
+    }
   }
 
   _createClass(Midi, [{
+    key: 'createTrack',
+    value: function createTrack(data) {
+      var track = new _Track2['default'](data);
+      track.midi = this;
+      this.tracks.push(track);
+      return track;
+    }
+  }, {
     key: 'tickToSecond',
     value: function tickToSecond(tick) {
       if (this._tickToSecond[tick]) return this._tickToSecond[tick];

@@ -19,7 +19,9 @@ var _Note = require('./Note');
 var _Note2 = _interopRequireDefault(_Note);
 
 var Track = (function () {
-  function Track(data) {
+  function Track() {
+    var data = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
+
     _classCallCheck(this, Track);
 
     this.events = [];
@@ -29,26 +31,31 @@ var Track = (function () {
     var noteOnEvents = {};
     var currentTick = 0;
     while (!reader.isAtEndOfFile()) {
-      var event = reader.readEvent();
-      currentTick += event.deltaTime;
-      event.tick = currentTick;
-      this.events.push(event);
-      switch (event.subtype) {
+      var _event = reader.readEvent();
+      currentTick += _event.deltaTime;
+      _event.tick = currentTick;
+      this.events.push(_event);
+      switch (_event.subtype) {
         case 'noteOn':
-          noteOnEvents[event.number] = event;
+          noteOnEvents[_event.number] = _event;
           break;
         case 'noteOff':
-          if (noteOnEvents[event.number] === undefined) throw "noteOff event without corresponding noteOn event";
-          var noteOnEvent = noteOnEvents[event.number];
-          var note = new _Note2['default'](noteOnEvent, event);
-          note.track = this;
-          this.notes.push(note);
+          if (noteOnEvents[_event.number] === undefined) throw "noteOff event without corresponding noteOn event";
+          var noteOnEvent = noteOnEvents[_event.number];
+          this.createNote(_event.number, noteOnEvent.tick, _event.tick);
           break;
       }
     }
   }
 
   _createClass(Track, [{
+    key: 'createNote',
+    value: function createNote(number, onTick, offTick) {
+      var note = new _Note2['default'](number, onTick, offTick);
+      note.track = this;
+      this.notes.push(note);
+    }
+  }, {
     key: 'notesOnAt',
     value: function notesOnAt(second) {
       return this.notes.filter(function (note) {

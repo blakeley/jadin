@@ -29,7 +29,7 @@ describe('Midi', function(){
     expect(cScaleMidi.tracks.length).to.equal(3);
   });
 
-  it('#createTrack should create a new track', function(){
+  it('#createTrack should create a new Track', function(){
     const defaultMidi = new Midi();
     expect(defaultMidi.tracks.length).to.equal(1);
     defaultMidi.createTrack();

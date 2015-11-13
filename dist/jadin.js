@@ -23,27 +23,39 @@ var Midi = (function () {
   function Midi(data) {
     _classCallCheck(this, Midi);
 
-    var reader = new _MidiReader2['default'](data);
-
-    var headerChunk = reader.readChunk();
-    var headerReader = new _MidiReader2['default'](headerChunk.data);
-    this.format = headerReader.readInt(2);
-    if (this.format == 2) throw "MIDI format 2 not supported";
-    var numberOfTracks = headerReader.readInt(2);
-    this.ppqn = headerReader.readInt(2); // assumes metrical timing
-
+    this.format = 0;
+    this.ppqn = 480;
     this.tracks = [];
-    for (var i = 0; i < numberOfTracks; i++) {
-      var trackChunk = reader.readChunk();
-      var track = new _Track2['default'](trackChunk.data);
-      track.midi = this;
-      this.tracks.push(track);
-    }
-
     this._tickToSecond = {};
+
+    if (!!data) {
+      var reader = new _MidiReader2['default'](data);
+
+      var headerChunk = reader.readChunk();
+      var headerReader = new _MidiReader2['default'](headerChunk.data);
+      this.format = headerReader.readInt(2);
+      if (this.format == 2) throw "MIDI format 2 not supported";
+      var numberOfTracks = headerReader.readInt(2);
+      this.ppqn = headerReader.readInt(2); // assumes metrical timing
+
+      for (var i = 0; i < numberOfTracks; i++) {
+        var trackChunk = reader.readChunk();
+        this.createTrack(trackChunk.data);
+      }
+    } else {
+      var tempoTrack = this.createTrack();
+    }
   }
 
   _createClass(Midi, [{
+    key: 'createTrack',
+    value: function createTrack(data) {
+      var track = new _Track2['default'](data);
+      track.midi = this;
+      this.tracks.push(track);
+      return track;
+    }
+  }, {
     key: 'tickToSecond',
     value: function tickToSecond(tick) {
       if (this._tickToSecond[tick]) return this._tickToSecond[tick];
@@ -372,12 +384,12 @@ var _createClass = (function () { function defineProperties(target, props) { for
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Note = (function () {
-  function Note(onEvent, offEvent) {
+  function Note(number, onTick, offTick) {
     _classCallCheck(this, Note);
 
-    this.number = onEvent.number;
-    this.onTick = onEvent.tick;
-    this.offTick = offEvent.tick;
+    this.number = number;
+    this._onTick = onTick;
+    this._offTick = offTick;
   }
 
   _createClass(Note, [{
@@ -389,6 +401,24 @@ var Note = (function () {
     key: "onDuring",
     value: function onDuring(onSecond, offSecond) {
       return this.onSecond <= offSecond && this.offSecond >= onSecond;
+    }
+  }, {
+    key: "onTick",
+    get: function get() {
+      return this._onTick;
+    },
+    set: function set(value) {
+      if (value >= this.offTick) throw "Cannot set onTick to be greater than or equal to offTick";
+      this._onTick = value;
+    }
+  }, {
+    key: "offTick",
+    get: function get() {
+      return this._offTick;
+    },
+    set: function set(value) {
+      if (value <= this.onTick) throw "Cannot set offTick to be less than or equal to onTick";
+      this._offTick = value;
     }
   }, {
     key: "midi",
@@ -439,7 +469,9 @@ var _Note = require('./Note');
 var _Note2 = _interopRequireDefault(_Note);
 
 var Track = (function () {
-  function Track(data) {
+  function Track() {
+    var data = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
+
     _classCallCheck(this, Track);
 
     this.events = [];
@@ -449,26 +481,31 @@ var Track = (function () {
     var noteOnEvents = {};
     var currentTick = 0;
     while (!reader.isAtEndOfFile()) {
-      var event = reader.readEvent();
-      currentTick += event.deltaTime;
-      event.tick = currentTick;
-      this.events.push(event);
-      switch (event.subtype) {
+      var _event = reader.readEvent();
+      currentTick += _event.deltaTime;
+      _event.tick = currentTick;
+      this.events.push(_event);
+      switch (_event.subtype) {
         case 'noteOn':
-          noteOnEvents[event.number] = event;
+          noteOnEvents[_event.number] = _event;
           break;
         case 'noteOff':
-          if (noteOnEvents[event.number] === undefined) throw "noteOff event without corresponding noteOn event";
-          var noteOnEvent = noteOnEvents[event.number];
-          var note = new _Note2['default'](noteOnEvent, event);
-          note.track = this;
-          this.notes.push(note);
+          if (noteOnEvents[_event.number] === undefined) throw "noteOff event without corresponding noteOn event";
+          var noteOnEvent = noteOnEvents[_event.number];
+          this.createNote(_event.number, noteOnEvent.tick, _event.tick);
           break;
       }
     }
   }
 
   _createClass(Track, [{
+    key: 'createNote',
+    value: function createNote(number, onTick, offTick) {
+      var note = new _Note2['default'](number, onTick, offTick);
+      note.track = this;
+      this.notes.push(note);
+    }
+  }, {
     key: 'notesOnAt',
     value: function notesOnAt(second) {
       return this.notes.filter(function (note) {
