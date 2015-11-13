@@ -15,6 +15,10 @@ describe('Midi', function(){
     expect(defaultMidi).to.not.be.null();
     expect(defaultMidi.format).to.equal(0);
     expect(defaultMidi.ppqn).to.equal(480);
+    expect(defaultMidi.notes).to.not.be.null();
+    expect(defaultMidi.notesOnAt(0)).to.not.be.null();
+    expect(defaultMidi.duration).to.equal(0);
+    expect(defaultMidi.tickToSecond(960)).to.equal(1);
   });
 
   it('#format should return the MIDI format', function(){

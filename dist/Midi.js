@@ -124,7 +124,7 @@ var Midi = (function () {
         return note.offSecond;
       }).reduce(function (a, b) {
         return Math.max(a, b);
-      });
+      }, 0);
     }
   }]);
 

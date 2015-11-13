@@ -60,7 +60,7 @@ export default class Midi {
   get duration() {
     return this.notes
       .map(function(note){return note.offSecond})
-      .reduce(function(a,b){return Math.max(a,b)})
+      .reduce(function(a,b){return Math.max(a,b)}, 0)
   }
 
   tickToSecond(tick) {
