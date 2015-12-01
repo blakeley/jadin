@@ -384,12 +384,16 @@ var _createClass = (function () { function defineProperties(target, props) { for
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Note = (function () {
-  function Note(number, onTick, offTick) {
+  function Note() {
+    var onEvent = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+    var offEvent = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
     _classCallCheck(this, Note);
 
-    this.number = number;
-    this._onTick = onTick;
-    this._offTick = offTick;
+    this.onEvent = onEvent;
+    this.offEvent = offEvent;
+    onEvent.note = this;
+    offEvent.note = this;
   }
 
   _createClass(Note, [{
@@ -405,25 +409,34 @@ var Note = (function () {
   }, {
     key: "onTick",
     get: function get() {
-      return this._onTick;
+      return this.onEvent.tick;
     },
     set: function set(value) {
       if (value >= this.offTick) throw "Cannot set onTick to be greater than or equal to offTick";
-      this._onTick = value;
+      this.onEvent.tick = value;
     }
   }, {
     key: "offTick",
     get: function get() {
-      return this._offTick;
+      return this.offEvent.tick;
     },
     set: function set(value) {
       if (value <= this.onTick) throw "Cannot set offTick to be less than or equal to onTick";
-      this._offTick = value;
+      this.offEvent.tick = value;
     }
   }, {
     key: "midi",
     get: function get() {
       return this.track.midi;
+    }
+  }, {
+    key: "number",
+    get: function get() {
+      return this.onEvent.number;
+    },
+    set: function set(value) {
+      this.onEvent.number = value;
+      this.offEvent.number = value;
     }
   }, {
     key: "onSecond",
@@ -492,20 +505,15 @@ var Track = (function () {
         case 'noteOff':
           if (noteOnEvents[_event.number] === undefined) throw "noteOff event without corresponding noteOn event";
           var noteOnEvent = noteOnEvents[_event.number];
-          this.createNote(_event.number, noteOnEvent.tick, _event.tick);
+          var note = new _Note2['default'](noteOnEvent, _event);
+          note.track = this;
+          this.notes.push(note);
           break;
       }
     }
   }
 
   _createClass(Track, [{
-    key: 'createNote',
-    value: function createNote(number, onTick, offTick) {
-      var note = new _Note2['default'](number, onTick, offTick);
-      note.track = this;
-      this.notes.push(note);
-    }
-  }, {
     key: 'notesOnAt',
     value: function notesOnAt(second) {
       return this.notes.filter(function (note) {

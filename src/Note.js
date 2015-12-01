@@ -1,30 +1,40 @@
 export default class Note {
-  constructor(number, onTick, offTick) {
-    this.number = number;
-    this._onTick = onTick;
-    this._offTick = offTick;
+  constructor(onEvent={}, offEvent={}) {
+    this.onEvent = onEvent;
+    this.offEvent = offEvent;
+    onEvent.note = this;
+    offEvent.note = this;
   }
 
   get onTick() {
-    return this._onTick
+    return this.onEvent.tick;
   }
 
   set onTick(value) {
     if (value >= this.offTick) throw "Cannot set onTick to be greater than or equal to offTick"
-    this._onTick = value;
+    this.onEvent.tick = value;
   }
 
   get offTick() {
-    return this._offTick;
+    return this.offEvent.tick;
   }
 
   set offTick(value) {
     if (value <= this.onTick) throw "Cannot set offTick to be less than or equal to onTick"
-    this._offTick = value;
+    this.offEvent.tick = value;
   }
 
   get midi() {
     return this.track.midi; 
+  }
+
+  get number() {
+    return this.onEvent.number;
+  }
+
+  set number(value) {
+    this.onEvent.number = value;
+    this.offEvent.number = value;
   }
 
   get onSecond() {

@@ -42,20 +42,15 @@ var Track = (function () {
         case 'noteOff':
           if (noteOnEvents[_event.number] === undefined) throw "noteOff event without corresponding noteOn event";
           var noteOnEvent = noteOnEvents[_event.number];
-          this.createNote(_event.number, noteOnEvent.tick, _event.tick);
+          var note = new _Note2['default'](noteOnEvent, _event);
+          note.track = this;
+          this.notes.push(note);
           break;
       }
     }
   }
 
   _createClass(Track, [{
-    key: 'createNote',
-    value: function createNote(number, onTick, offTick) {
-      var note = new _Note2['default'](number, onTick, offTick);
-      note.track = this;
-      this.notes.push(note);
-    }
-  }, {
     key: 'notesOnAt',
     value: function notesOnAt(second) {
       return this.notes.filter(function (note) {

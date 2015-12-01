@@ -34,13 +34,6 @@ describe('Track', function(){
     expect(cScaleMidi.tracks[1].midi).to.equal(cScaleMidi);
   });
 
-  it('#createNote should create a new Note', function(){
-    const defaultTrack = new Track();
-    expect(defaultTrack.notes.length).to.equal(0);
-    defaultTrack.createNote();
-    expect(defaultTrack.notes.length).to.equal(1);    
-  });
-
   it('#index should return the index of this track', function(){
     expect(cScaleMidi.tracks[0].index).to.equal(0);
     expect(cScaleMidi.tracks[1].index).to.equal(1);

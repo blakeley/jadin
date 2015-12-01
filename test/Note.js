@@ -28,7 +28,7 @@ describe('Note', function(){
   });
 
   it('#onTick= should not set the onTick to be greater than the offTick', function(){
-    const note = new Note(60, 2, 4)
+    const note = new Note({tick: 2}, {tick: 4})
     try {
       note.onTick = 5;
     } catch(e) {
@@ -37,7 +37,7 @@ describe('Note', function(){
   });
 
   it('#offTick= should not set the offTick to be less than the onTick', function(){
-    const note = new Note(60, 2, 4)
+    const note = new Note({tick: 2}, {tick: 4})
     try {
       note.offTick = 1;
     } catch(e) {
