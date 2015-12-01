@@ -380,11 +380,4 @@ describe('MidiReader', function(){
     expect(event.type).to.equal('sysEx');
     expect(event.data).to.equal('\x7e\x00\x09\x01\xf7');
   });
-
-
-})
-
-
-
-
-
+});

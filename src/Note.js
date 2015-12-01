@@ -38,11 +38,11 @@ export default class Note {
   }
 
   get onSecond() {
-    return this.midi.tickToSecond(this.onTick);
+    return this.onEvent.second;
   }
 
   get offSecond() {
-    return this.midi.tickToSecond(this.offTick);
+    return this.offEvent.second;
   }
 
   get duration() {

@@ -1,3 +1,5 @@
+import Event from './Event';
+
 export default class MidiReader {
   constructor(data) {
     this.data = data;
@@ -5,13 +7,13 @@ export default class MidiReader {
   }
 
   read(length) {
-    var result = this.data.substr(this.position, length);
+    const result = this.data.substr(this.position, length);
     this.position += length;
     return result;
   }
 
   readInt(numberOfBytes) {
-    var result = 0;
+    let result = 0;
 
     while(numberOfBytes > 0){
       result <<= 8;
@@ -24,7 +26,7 @@ export default class MidiReader {
   }
 
   readVLQ() {
-    var result = 0;
+    let result = 0;
     let octet;
 
     do {
@@ -37,14 +39,14 @@ export default class MidiReader {
   }
 
   readEvent() {
-    var event = {};
+    let event = new Event();
     event.deltaTime = this.readVLQ();
 
-    var firstByte = this.readInt(1);
+    const firstByte = this.readInt(1);
     if(firstByte == 0xff){
       event.type = 'meta';
-      var subtypeByte = this.readInt(1);
-      var length = this.readVLQ();
+      const subtypeByte = this.readInt(1);
+      const length = this.readVLQ();
       switch(subtypeByte){
         case 0x00:
           event.subtype = 'sequenceNumber';
@@ -109,7 +111,7 @@ export default class MidiReader {
         case 0x54:
           event.subtype = 'smpteOffset';
           if (length != 5) throw "Length for this smpteOffset event was " + length + ", but must be 5";
-          var hourByte = this.readInt(1);
+          const hourByte = this.readInt(1);
           event.frameRate = {0: 24, 1: 25, 2: 29.97, 3: 30}[hourByte >> 6];
           event.hours = hourByte & 0x1f;
           event.minutes = this.readInt(1);
@@ -139,12 +141,12 @@ export default class MidiReader {
       }
     } else if(firstByte == 0xf0) {
       event.type = 'sysEx';
-      var length = this.readVLQ();
+      const length = this.readVLQ();
       event.data = this.read(length);
       return event;
     } else {
       event.type = 'channel';
-      var statusByte, dataByte1;
+      let statusByte, dataByte1;
       if(firstByte < 0x80){ // running status; first byte is the first data byte
         dataByte1 = firstByte;
         statusByte = this.lastStatusByte; 
@@ -155,7 +157,7 @@ export default class MidiReader {
       }
 
       event.channel = statusByte & 0x0f;
-      var eventSubtype = statusByte >> 4;
+      const eventSubtype = statusByte >> 4;
       switch(eventSubtype) {
         case 0x8:
           event.subtype = 'noteOff';
@@ -194,9 +196,10 @@ export default class MidiReader {
   }
 
   readChunk(){
-    var type = this.read(4);
-    var length = this.readInt(4);
-    var data = this.read(length);
+    const type = this.read(4);
+    const length = this.readInt(4);
+    const data = this.read(length);
+
     return {
       type: type,
       length: length,

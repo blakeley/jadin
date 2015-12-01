@@ -13,6 +13,7 @@ export default class Track {
       const event = reader.readEvent();
       currentTick += event.deltaTime;
       event.tick  = currentTick;
+      event.track = this;
       this.events.push(event);
       switch(event.subtype){
         case 'noteOn':
