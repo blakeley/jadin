@@ -18,6 +18,10 @@ var _Track = require('./Track');
 
 var _Track2 = _interopRequireDefault(_Track);
 
+var _Cursor = require('./Cursor');
+
+var _Cursor2 = _interopRequireDefault(_Cursor);
+
 var Midi = (function () {
   function Midi(data) {
     _classCallCheck(this, Midi);
@@ -53,6 +57,13 @@ var Midi = (function () {
       track.midi = this;
       this.tracks.push(track);
       return track;
+    }
+  }, {
+    key: 'newCursor',
+    value: function newCursor() {
+      return new _Cursor2['default'](this.events.sort(function (e1, e2) {
+        return e1.tick - e2.tick;
+      }));
     }
   }, {
     key: 'tickToSecond',
@@ -104,6 +115,7 @@ var Midi = (function () {
       }).reduce(function (a, b) {
         return a.concat(b);
       });
+      //.sort(function(e1,e2){return e1.tick < e2.tick});
     }
   }, {
     key: 'tempoEvents',

@@ -1,5 +1,6 @@
 import MidiReader from './MidiReader';
 import Track from './Track';
+import Cursor from './Cursor';
 
 export default class Midi {
   constructor(data) {
@@ -34,6 +35,10 @@ export default class Midi {
     return track;
   }
 
+  newCursor() {
+    return new Cursor(this.events.sort(function(e1,e2){return e1.tick - e2.tick}));
+  }
+
   get notes() {
     return this.tracks
       .map(function(track){return track.notes})
@@ -44,6 +49,7 @@ export default class Midi {
     return this.tracks
       .map(function(track){return track.events})
       .reduce(function(a,b){return a.concat(b)});
+      //.sort(function(e1,e2){return e1.tick < e2.tick});
   }
 
   get tempoEvents() {

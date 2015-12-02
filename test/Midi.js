@@ -1,6 +1,7 @@
 import Midi from '../src/Midi';
 import {expect} from 'chai';
 import fs from 'fs';
+import Cursor from '../src/Cursor';
 
 const cScaleData = fs.readFileSync('./fixtures/c.mid', 'binary');
 const cScaleMidi = new Midi(cScaleData);
@@ -107,4 +108,20 @@ describe('Midi', function(){
     expect(cScaleMidi.notesOnDuring(0,2)[0]).to.equal(cScaleMidi.tracks[1].notes[0]);
     expect(cScaleMidi.notesOnDuring(0,2)[1]).to.equal(cScaleMidi.tracks[2].notes[0]);
   });
+
+  it('#newCursor should create a new cursor', function(){
+    expect(cScaleMidi.newCursor()).to.be.an.instanceof(Cursor);
+  });
+
+  it('#newCursor should order its events by ascending tick', function(){
+    const cursor = cScaleMidi.newCursor();
+
+    expect(cursor.events[0].tick).to.be.lte(cursor.events[1].tick);
+    expect(cursor.events[1].tick).to.be.lte(cursor.events[2].tick);
+    expect(cursor.events[2].tick).to.be.lte(cursor.events[3].tick);
+
+  });
+
+
+
 });

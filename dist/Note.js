@@ -66,12 +66,12 @@ var Note = (function () {
   }, {
     key: "onSecond",
     get: function get() {
-      return this.midi.tickToSecond(this.onTick);
+      return this.onEvent.second;
     }
   }, {
     key: "offSecond",
     get: function get() {
-      return this.midi.tickToSecond(this.offTick);
+      return this.offEvent.second;
     }
   }, {
     key: "duration",

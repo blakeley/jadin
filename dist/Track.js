@@ -34,6 +34,7 @@ var Track = (function () {
       var _event = reader.readEvent();
       currentTick += _event.deltaTime;
       _event.tick = currentTick;
+      _event.track = this;
       this.events.push(_event);
       switch (_event.subtype) {
         case 'noteOn':

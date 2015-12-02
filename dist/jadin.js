@@ -1,4 +1,80 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.Midi = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Cursor = (function () {
+  function Cursor(events) {
+    _classCallCheck(this, Cursor);
+
+    this.events = events;
+    this.index = 0;
+  }
+
+  _createClass(Cursor, [{
+    key: "wind",
+    value: function wind(second) {
+      var callbacks = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      while (!!this.event && this.event.second <= second) {
+        if (!!callbacks[this.event.subtype]) {
+          callbacks[this.event.subtype](this.event);
+        }
+        this.index++;
+      }
+    }
+  }, {
+    key: "event",
+    get: function get() {
+      return this.events[this.index];
+    }
+  }]);
+
+  return Cursor;
+})();
+
+exports["default"] = Cursor;
+module.exports = exports["default"];
+},{}],2:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Event = (function () {
+  function Event() {
+    _classCallCheck(this, Event);
+  }
+
+  _createClass(Event, [{
+    key: "midi",
+    get: function get() {
+      return this.track.midi;
+    }
+  }, {
+    key: "second",
+    get: function get() {
+      return this.midi.tickToSecond(this.tick);
+    }
+  }]);
+
+  return Event;
+})();
+
+exports["default"] = Event;
+module.exports = exports["default"];
+},{}],3:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -18,6 +94,10 @@ var _MidiReader2 = _interopRequireDefault(_MidiReader);
 var _Track = require('./Track');
 
 var _Track2 = _interopRequireDefault(_Track);
+
+var _Cursor = require('./Cursor');
+
+var _Cursor2 = _interopRequireDefault(_Cursor);
 
 var Midi = (function () {
   function Midi(data) {
@@ -54,6 +134,13 @@ var Midi = (function () {
       track.midi = this;
       this.tracks.push(track);
       return track;
+    }
+  }, {
+    key: 'newCursor',
+    value: function newCursor() {
+      return new _Cursor2['default'](this.events.sort(function (e1, e2) {
+        return e1.tick - e2.tick;
+      }));
     }
   }, {
     key: 'tickToSecond',
@@ -105,6 +192,7 @@ var Midi = (function () {
       }).reduce(function (a, b) {
         return a.concat(b);
       });
+      //.sort(function(e1,e2){return e1.tick < e2.tick});
     }
   }, {
     key: 'tempoEvents',
@@ -134,7 +222,7 @@ var Midi = (function () {
 
 exports['default'] = Midi;
 module.exports = exports['default'];
-},{"./MidiReader":2,"./Track":4}],2:[function(require,module,exports){
+},{"./Cursor":1,"./MidiReader":4,"./Track":6}],4:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -143,7 +231,13 @@ Object.defineProperty(exports, '__esModule', {
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+var _Event = require('./Event');
+
+var _Event2 = _interopRequireDefault(_Event);
 
 var MidiReader = (function () {
   function MidiReader(data) {
@@ -191,78 +285,78 @@ var MidiReader = (function () {
   }, {
     key: 'readEvent',
     value: function readEvent() {
-      var event = {};
+      var event = new _Event2['default']();
       event.deltaTime = this.readVLQ();
 
       var firstByte = this.readInt(1);
       if (firstByte == 0xff) {
         event.type = 'meta';
         var subtypeByte = this.readInt(1);
-        var length = this.readVLQ();
+        var _length = this.readVLQ();
         switch (subtypeByte) {
           case 0x00:
             event.subtype = 'sequenceNumber';
-            if (length != 2) throw "Length for this sequenceNumber event was " + length + ", but must be 2";
+            if (_length != 2) throw "Length for this sequenceNumber event was " + _length + ", but must be 2";
             event.number = this.readInt(2);
             return event;
           case 0x01:
             event.subtype = 'text';
-            event.text = this.read(length);
+            event.text = this.read(_length);
             return event;
           case 0x02:
             event.subtype = 'copyright';
-            event.text = this.read(length);
+            event.text = this.read(_length);
             return event;
           case 0x03:
             event.subtype = 'trackName';
-            event.text = this.read(length);
+            event.text = this.read(_length);
             return event;
           case 0x04:
             event.subtype = 'instrumentName';
-            event.text = this.read(length);
+            event.text = this.read(_length);
             return event;
           case 0x05:
             event.subtype = 'lyric';
-            event.text = this.read(length);
+            event.text = this.read(_length);
             return event;
           case 0x06:
             event.subtype = 'marker';
-            event.text = this.read(length);
+            event.text = this.read(_length);
             return event;
           case 0x07:
             event.subtype = 'cuePoint';
-            event.text = this.read(length);
+            event.text = this.read(_length);
             return event;
           case 0x08:
             event.subtype = 'programName';
-            event.text = this.read(length);
+            event.text = this.read(_length);
             return event;
           case 0x09:
             event.subtype = 'deviceName';
-            event.text = this.read(length);
+            event.text = this.read(_length);
             return event;
           case 0x20:
             event.subtype = 'channelPrefix';
             event.text = this.readInt(1);
-            if (length != 1) throw "Length for this midiChannelPrefix event was " + length + ", but must be 1";
+            if (_length != 1) throw "Length for this midiChannelPrefix event was " + _length + ", but must be 1";
             return event;
           case 0x21:
             event.subtype = 'port';
             event.port = this.readInt(1);
-            if (length != 1) throw "Length for this port event was " + length + ", but must be 1";
+            if (_length != 1) throw "Length for this port event was " + _length + ", but must be 1";
             return event;
           case 0x2f:
             event.subtype = 'endOfTrack';
-            if (length != 0) throw "Length for this endOfTrack event was " + length + ", but must be 0";
+            if (_length != 0) throw "Length for this endOfTrack event was " + _length + ", but must be 0";
             return event;
           case 0x51:
             event.subtype = 'setTempo';
-            if (length != 3) throw "Length for this setTempo event was " + length + ", but must be 3";
+            if (_length != 3) throw "Length for this setTempo event was " + _length + ", but must be 3";
             event.tempo = this.readInt(3);
             return event;
           case 0x54:
             event.subtype = 'smpteOffset';
-            if (length != 5) throw "Length for this smpteOffset event was " + length + ", but must be 5";
+            if (_length != 5) throw "Length for this smpteOffset event was " + _length + ", but must be 5";
             var hourByte = this.readInt(1);
             event.frameRate = ({ 0: 24, 1: 25, 2: 29.97, 3: 30 })[hourByte >> 6];
             event.hours = hourByte & 0x1f;
@@ -273,7 +367,7 @@ var MidiReader = (function () {
             return event;
           case 0x58:
             event.subtype = 'timeSignature';
-            if (length != 4) throw "Length for this timeSignature event was " + length + ", but must be 4";
+            if (_length != 4) throw "Length for this timeSignature event was " + _length + ", but must be 4";
             event.numerator = this.readInt(1);
             event.denominator = Math.pow(2, this.readInt(1));
             event.metronome = this.readInt(1);
@@ -281,24 +375,25 @@ var MidiReader = (function () {
             return event;
           case 0x59:
             event.subtype = 'keySignature';
-            if (length != 2) throw "Length for this keySignature event was " + length + ", but must be 2";
+            if (_length != 2) throw "Length for this keySignature event was " + _length + ", but must be 2";
             event.key = this.readInt(1);
             if (event.key > 127) event.key = 128 - event.key;
             event.scale = ({ 0: 'major', 1: 'minor' })[this.readInt(1)];
             return event;
           case 0x7f:
             event.subtype = 'sequencerSpecific';
-            event.data = this.read(length);
+            event.data = this.read(_length);
             return event;
         }
       } else if (firstByte == 0xf0) {
         event.type = 'sysEx';
-        var length = this.readVLQ();
-        event.data = this.read(length);
+        var _length2 = this.readVLQ();
+        event.data = this.read(_length2);
         return event;
       } else {
         event.type = 'channel';
-        var statusByte, dataByte1;
+        var statusByte = undefined,
+            dataByte1 = undefined;
         if (firstByte < 0x80) {
           // running status; first byte is the first data byte
           dataByte1 = firstByte;
@@ -354,6 +449,7 @@ var MidiReader = (function () {
       var type = this.read(4);
       var length = this.readInt(4);
       var data = this.read(length);
+
       return {
         type: type,
         length: length,
@@ -372,7 +468,7 @@ var MidiReader = (function () {
 
 exports['default'] = MidiReader;
 module.exports = exports['default'];
-},{}],3:[function(require,module,exports){
+},{"./Event":2}],5:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -441,12 +537,12 @@ var Note = (function () {
   }, {
     key: "onSecond",
     get: function get() {
-      return this.midi.tickToSecond(this.onTick);
+      return this.onEvent.second;
     }
   }, {
     key: "offSecond",
     get: function get() {
-      return this.midi.tickToSecond(this.offTick);
+      return this.offEvent.second;
     }
   }, {
     key: "duration",
@@ -460,7 +556,7 @@ var Note = (function () {
 
 exports["default"] = Note;
 module.exports = exports["default"];
-},{}],4:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -497,6 +593,7 @@ var Track = (function () {
       var _event = reader.readEvent();
       currentTick += _event.deltaTime;
       _event.tick = currentTick;
+      _event.track = this;
       this.events.push(_event);
       switch (_event.subtype) {
         case 'noteOn':
@@ -539,5 +636,5 @@ var Track = (function () {
 
 exports['default'] = Track;
 module.exports = exports['default'];
-},{"./MidiReader":2,"./Note":3}]},{},[1])(1)
+},{"./MidiReader":4,"./Note":5}]},{},[3])(3)
 });

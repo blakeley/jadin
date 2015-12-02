@@ -6,7 +6,13 @@ Object.defineProperty(exports, '__esModule', {
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+var _Event = require('./Event');
+
+var _Event2 = _interopRequireDefault(_Event);
 
 var MidiReader = (function () {
   function MidiReader(data) {
@@ -54,78 +60,78 @@ var MidiReader = (function () {
   }, {
     key: 'readEvent',
     value: function readEvent() {
-      var event = {};
+      var event = new _Event2['default']();
       event.deltaTime = this.readVLQ();
 
       var firstByte = this.readInt(1);
       if (firstByte == 0xff) {
         event.type = 'meta';
         var subtypeByte = this.readInt(1);
-        var length = this.readVLQ();
+        var _length = this.readVLQ();
         switch (subtypeByte) {
           case 0x00:
             event.subtype = 'sequenceNumber';
-            if (length != 2) throw "Length for this sequenceNumber event was " + length + ", but must be 2";
+            if (_length != 2) throw "Length for this sequenceNumber event was " + _length + ", but must be 2";
             event.number = this.readInt(2);
             return event;
           case 0x01:
             event.subtype = 'text';
-            event.text = this.read(length);
+            event.text = this.read(_length);
             return event;
           case 0x02:
             event.subtype = 'copyright';
-            event.text = this.read(length);
+            event.text = this.read(_length);
             return event;
           case 0x03:
             event.subtype = 'trackName';
-            event.text = this.read(length);
+            event.text = this.read(_length);
             return event;
           case 0x04:
             event.subtype = 'instrumentName';
-            event.text = this.read(length);
+            event.text = this.read(_length);
             return event;
           case 0x05:
             event.subtype = 'lyric';
-            event.text = this.read(length);
+            event.text = this.read(_length);
             return event;
           case 0x06:
             event.subtype = 'marker';
-            event.text = this.read(length);
+            event.text = this.read(_length);
             return event;
           case 0x07:
             event.subtype = 'cuePoint';
-            event.text = this.read(length);
+            event.text = this.read(_length);
             return event;
           case 0x08:
             event.subtype = 'programName';
-            event.text = this.read(length);
+            event.text = this.read(_length);
             return event;
           case 0x09:
             event.subtype = 'deviceName';
-            event.text = this.read(length);
+            event.text = this.read(_length);
             return event;
           case 0x20:
             event.subtype = 'channelPrefix';
             event.text = this.readInt(1);
-            if (length != 1) throw "Length for this midiChannelPrefix event was " + length + ", but must be 1";
+            if (_length != 1) throw "Length for this midiChannelPrefix event was " + _length + ", but must be 1";
             return event;
           case 0x21:
             event.subtype = 'port';
             event.port = this.readInt(1);
-            if (length != 1) throw "Length for this port event was " + length + ", but must be 1";
+            if (_length != 1) throw "Length for this port event was " + _length + ", but must be 1";
             return event;
           case 0x2f:
             event.subtype = 'endOfTrack';
-            if (length != 0) throw "Length for this endOfTrack event was " + length + ", but must be 0";
+            if (_length != 0) throw "Length for this endOfTrack event was " + _length + ", but must be 0";
             return event;
           case 0x51:
             event.subtype = 'setTempo';
-            if (length != 3) throw "Length for this setTempo event was " + length + ", but must be 3";
+            if (_length != 3) throw "Length for this setTempo event was " + _length + ", but must be 3";
             event.tempo = this.readInt(3);
             return event;
           case 0x54:
             event.subtype = 'smpteOffset';
-            if (length != 5) throw "Length for this smpteOffset event was " + length + ", but must be 5";
+            if (_length != 5) throw "Length for this smpteOffset event was " + _length + ", but must be 5";
             var hourByte = this.readInt(1);
             event.frameRate = ({ 0: 24, 1: 25, 2: 29.97, 3: 30 })[hourByte >> 6];
             event.hours = hourByte & 0x1f;
@@ -136,7 +142,7 @@ var MidiReader = (function () {
             return event;
           case 0x58:
             event.subtype = 'timeSignature';
-            if (length != 4) throw "Length for this timeSignature event was " + length + ", but must be 4";
+            if (_length != 4) throw "Length for this timeSignature event was " + _length + ", but must be 4";
             event.numerator = this.readInt(1);
             event.denominator = Math.pow(2, this.readInt(1));
             event.metronome = this.readInt(1);
@@ -144,24 +150,25 @@ var MidiReader = (function () {
             return event;
           case 0x59:
             event.subtype = 'keySignature';
-            if (length != 2) throw "Length for this keySignature event was " + length + ", but must be 2";
+            if (_length != 2) throw "Length for this keySignature event was " + _length + ", but must be 2";
             event.key = this.readInt(1);
             if (event.key > 127) event.key = 128 - event.key;
             event.scale = ({ 0: 'major', 1: 'minor' })[this.readInt(1)];
             return event;
           case 0x7f:
             event.subtype = 'sequencerSpecific';
-            event.data = this.read(length);
+            event.data = this.read(_length);
             return event;
         }
       } else if (firstByte == 0xf0) {
         event.type = 'sysEx';
-        var length = this.readVLQ();
-        event.data = this.read(length);
+        var _length2 = this.readVLQ();
+        event.data = this.read(_length2);
         return event;
       } else {
         event.type = 'channel';
-        var statusByte, dataByte1;
+        var statusByte = undefined,
+            dataByte1 = undefined;
         if (firstByte < 0x80) {
           // running status; first byte is the first data byte
           dataByte1 = firstByte;
@@ -217,6 +224,7 @@ var MidiReader = (function () {
       var type = this.read(4);
       var length = this.readInt(4);
       var data = this.read(length);
+
       return {
         type: type,
         length: length,
