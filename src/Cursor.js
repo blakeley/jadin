@@ -2,6 +2,7 @@ export default class Cursor {
   constructor(events){
     this.events = events;
     this.index = 0;
+    this.second = 0;
   }
 
   get nextEvent(){
@@ -13,6 +14,8 @@ export default class Cursor {
   }
 
   forward(second, callbacks={}){
+    this.second = second;
+
     while(!!this.nextEvent && this.nextEvent.second <= second){
       if(!!callbacks[this.nextEvent.subtype]){
         callbacks[this.nextEvent.subtype](this.nextEvent);
@@ -23,6 +26,8 @@ export default class Cursor {
   }
 
   backward(second, callbacks={}){
+    this.second = second;
+
     while(!!this.previousEvent && this.previousEvent.second > second){
       if(!!callbacks[this.previousEvent.subtype]){
         callbacks[this.previousEvent.subtype](this.previousEvent);

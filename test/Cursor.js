@@ -64,6 +64,12 @@ describe('Cursor', function(){
     expect('everthing').to.be.ok;
   });
 
+  it('#forward sets second', function(){
+    const cursor = new Cursor([{second: 1, subtype: 'unknown'}]);
+    cursor.forward(2);
+    expect(cursor.second).to.equal(2);
+  });
+
   it('#previousEvent returns the event immediately preceding the current position', function(){
     const cursor = new Cursor(['a','b','c']);
     expect(cursor.previousEvent).to.be.undefined;
@@ -127,4 +133,9 @@ describe('Cursor', function(){
   });
 
 
+  it('#backward sets second', function(){
+    const cursor = new Cursor([{second: 1, subtype: 'unknown'}]);
+    cursor.backward(0);
+    expect(cursor.second).to.equal(0);
+  });
 });

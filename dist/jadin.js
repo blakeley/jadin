@@ -15,12 +15,15 @@ var Cursor = (function () {
 
     this.events = events;
     this.index = 0;
+    this.second = 0;
   }
 
   _createClass(Cursor, [{
     key: "forward",
     value: function forward(second) {
       var callbacks = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      this.second = second;
 
       while (!!this.nextEvent && this.nextEvent.second <= second) {
         if (!!callbacks[this.nextEvent.subtype]) {
@@ -34,6 +37,8 @@ var Cursor = (function () {
     key: "backward",
     value: function backward(second) {
       var callbacks = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      this.second = second;
 
       while (!!this.previousEvent && this.previousEvent.second > second) {
         if (!!callbacks[this.previousEvent.subtype]) {
