@@ -4,16 +4,31 @@ export default class Cursor {
     this.index = 0;
   }
 
-  get event(){
-    return this.events[this.index]
+  get nextEvent(){
+    return this.events[this.index];
   }
 
-  wind(second, callbacks={}){
-    while(!!this.event && this.event.second <= second){
-      if(!!callbacks[this.event.subtype]){
-        callbacks[this.event.subtype](this.event);
+  get previousEvent(){
+    return this.events[this.index-1];
+  }
+
+  forward(second, callbacks={}){
+    while(!!this.nextEvent && this.nextEvent.second <= second){
+      if(!!callbacks[this.nextEvent.subtype]){
+        callbacks[this.nextEvent.subtype](this.nextEvent);
       }
+
       this.index++;
     }
+  }
+
+  backward(second, callbacks={}){
+    while(!!this.previousEvent && this.previousEvent.second > second){
+      if(!!callbacks[this.previousEvent.subtype]){
+        callbacks[this.previousEvent.subtype](this.previousEvent);
+      }
+
+      this.index--;
+    }    
   }
 }

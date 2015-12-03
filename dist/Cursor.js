@@ -17,21 +17,40 @@ var Cursor = (function () {
   }
 
   _createClass(Cursor, [{
-    key: "wind",
-    value: function wind(second) {
+    key: "forward",
+    value: function forward(second) {
       var callbacks = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
-      while (!!this.event && this.event.second <= second) {
-        if (!!callbacks[this.event.subtype]) {
-          callbacks[this.event.subtype](this.event);
+      while (!!this.nextEvent && this.nextEvent.second <= second) {
+        if (!!callbacks[this.nextEvent.subtype]) {
+          callbacks[this.nextEvent.subtype](this.nextEvent);
         }
+
         this.index++;
       }
     }
   }, {
-    key: "event",
+    key: "backward",
+    value: function backward(second) {
+      var callbacks = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+      while (!!this.previousEvent && this.previousEvent.second > second) {
+        if (!!callbacks[this.previousEvent.subtype]) {
+          callbacks[this.previousEvent.subtype](this.previousEvent);
+        }
+
+        this.index--;
+      }
+    }
+  }, {
+    key: "nextEvent",
     get: function get() {
       return this.events[this.index];
+    }
+  }, {
+    key: "previousEvent",
+    get: function get() {
+      return this.events[this.index - 1];
     }
   }]);
 

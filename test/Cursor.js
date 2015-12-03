@@ -6,14 +6,14 @@ describe('Cursor', function(){
     expect(new Cursor([])).to.not.be.null();
   });
 
-  it('#event returns the event at the current position', function(){
+  it('#nextEvent returns the event immediately following the current position', function(){
     const cursor = new Cursor(['a','b','c']);
-    expect(cursor.event).to.equal('a');
+    expect(cursor.nextEvent).to.equal('a');
     cursor.index = 2;
-    expect(cursor.event).to.equal('c');
+    expect(cursor.nextEvent).to.equal('c');
   });
 
-  it('#wind advances the cursor to the first event which occurs after the given time', function(){
+  it('#forward moves the cursor to the first event which occurs strictly after the given time', function(){
     const cursor = new Cursor([
         {second: 0, subtype: 'noteOn'},
         {second: 1, subtype: 'noteOn'},
@@ -21,14 +21,14 @@ describe('Cursor', function(){
         {second: 3, subtype: 'noteOn'},
       ]);
 
-    cursor.wind(1, {
+    cursor.forward(1, {
       noteOn: function(){}
     });
 
     expect(cursor.index).to.equal(2);
   });
 
-  it('#wind can advance to the end of the event array', function(){
+  it('#forward can advance to the end of the event array', function(){
     const cursor = new Cursor([
         {second: 0, subtype: 'noteOn'},
         {second: 1, subtype: 'noteOn'},
@@ -36,18 +36,18 @@ describe('Cursor', function(){
         {second: 3, subtype: 'noteOn'},
       ]);
 
-    cursor.wind(99, {
+    cursor.forward(99, {
       noteOn: function(){}
     });
 
     expect(cursor.index).to.equal(4);
   });
 
-  it('#wind calls the corresponding callback for each event it advances through', function(){
+  it('#forward calls the corresponding callback for each event it advances through', function(){
     const cursor = new Cursor([{second: 1, subtype: 'noteOn'}]);
 
     let callbackFired = false;
-    cursor.wind(2, {
+    cursor.forward(2, {
       noteOn: function(event){
         if(event.second === 1){
           callbackFired = true;
@@ -58,9 +58,73 @@ describe('Cursor', function(){
     expect(callbackFired).to.be.true;
   });
 
-  it('#wind works with null callbacks', function(){
-    const cursor = new Cursor([{second: 1, subtype: 'noteOn'}]);
-    cursor.wind(2);
+  it('#forward works with null callbacks', function(){
+    const cursor = new Cursor([{second: 1, subtype: 'unknown'}]);
+    cursor.forward(2);
     expect('everthing').to.be.ok;
   });
+
+  it('#previousEvent returns the event immediately preceding the current position', function(){
+    const cursor = new Cursor(['a','b','c']);
+    expect(cursor.previousEvent).to.be.undefined;
+    cursor.index = 2;
+    expect(cursor.previousEvent).to.equal('b');    
+  });
+
+  it('#backward moves the cursor to the last event which occurs at or after the given time', function(){
+    const cursor = new Cursor([
+        {second: 0, subtype: 'noteOn'},
+        {second: 1, subtype: 'noteOn'},
+        {second: 2, subtype: 'noteOn'},
+        {second: 3, subtype: 'noteOn'},
+      ]);
+
+    cursor.index = 4;
+    cursor.backward(1, {
+      noteOn: function(){}
+    });
+
+    expect(cursor.index).to.equal(2);
+  });
+
+  it('#backward can advance to the beginning of the event array', function(){
+    const cursor = new Cursor([
+        {second: 0, subtype: 'noteOn'},
+        {second: 1, subtype: 'noteOn'},
+        {second: 2, subtype: 'noteOn'},
+        {second: 3, subtype: 'noteOn'},
+      ]);
+
+    cursor.index = 4;
+    cursor.backward(-1, {
+      noteOn: function(){}
+    });
+
+    expect(cursor.index).to.equal(0);
+  });
+
+  it('#backward calls the corresponding callback for each event it advances through', function(){
+    const cursor = new Cursor([{second: 1, subtype: 'noteOn'}]);
+    cursor.index = 1;
+
+    let callbackFired = false;
+    cursor.backward(0, {
+      noteOn: function(event){
+        if(event.second === 1){
+          callbackFired = true;
+        }
+      }
+    });
+
+    expect(callbackFired).to.be.true;
+  });
+
+  it('#backward works with null callbacks', function(){
+    const cursor = new Cursor([{second: 1, subtype: 'unknown'}]);
+    cursor.index = 1;
+    cursor.backward(0);
+    expect('everthing').to.be.ok;
+  });
+
+
 });
