@@ -26,32 +26,47 @@ var Track = (function () {
 
     this.events = [];
     this.notes = [];
+    this._noteOnEvents = {};
 
     var reader = new _MidiReader2['default'](data);
-    var noteOnEvents = {};
     var currentTick = 0;
     while (!reader.isAtEndOfFile()) {
       var _event = reader.readEvent();
       currentTick += _event.deltaTime;
       _event.tick = currentTick;
-      _event.track = this;
-      this.events.push(_event);
-      switch (_event.subtype) {
-        case 'noteOn':
-          noteOnEvents[_event.number] = _event;
-          break;
-        case 'noteOff':
-          if (noteOnEvents[_event.number] === undefined) throw "noteOff event without corresponding noteOn event";
-          var noteOnEvent = noteOnEvents[_event.number];
-          var note = new _Note2['default'](noteOnEvent, _event);
-          note.track = this;
-          this.notes.push(note);
-          break;
-      }
+      this.addEvent(_event);
     }
   }
 
   _createClass(Track, [{
+    key: 'addEvent',
+    value: function addEvent(event) {
+      event.track = this;
+      this.events.push(event);
+      switch (event.subtype) {
+        case 'noteOn':
+          var invalidEvent = this._noteOnEvents[event.number];
+          if (!!invalidEvent) {
+            // previous noteOn event was invalid
+            this.events.splice(this.events.indexOf(invalidEvent), 1); // remove that event
+          }
+          this._noteOnEvents[event.number] = event;
+          break;
+        case 'noteOff':
+          var noteOnEvent = this._noteOnEvents[event.number];
+          if (!!noteOnEvent) {
+            this._noteOnEvents[event.number] = undefined;
+            var note = new _Note2['default'](noteOnEvent, event);
+            note.track = this;
+            this.notes.push(note);
+          } else {
+            // this noteOff event is invalid
+            this.events.pop(); // remove this event
+          }
+          break;
+      }
+    }
+  }, {
     key: 'notesOnAt',
     value: function notesOnAt(second) {
       return this.notes.filter(function (note) {

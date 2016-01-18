@@ -5,6 +5,10 @@ import Note from '../src/Note';
 import {expect} from 'chai';
 import fs from 'fs';
 
+var chai = require('chai');
+chai.use(require('chai-change'));
+
+
 var cScaleData = fs.readFileSync('fixtures/c.mid', 'binary');
 var cScaleMidi = new Midi(cScaleData);
 
@@ -16,6 +20,48 @@ describe('Track', function(){
   it('#constructor should construct a Track instance given no arguments', function(){
     const defaultTrack = new Track();
     expect(new Track()).to.not.be.null();
+  });
+
+  it('#addEvent should add an event to this track\'s array of events', function(){
+    const track = new Track();
+    expect(track.events.length).to.equal(0);
+    track.addEvent({});
+    expect(track.events.length).to.equal(1);
+  });
+
+  it('#addEvent should create a new note from a noteOn/noteOff pair', function(){
+    const track = new Track();
+    expect(function(){
+      track.addEvent({subtype: 'noteOn', number: 60});
+      track.addEvent({subtype: 'noteOff', number: 60});
+    }).to.change(function(){return track.notes.length}, {by: 1});
+  });
+
+  it('#addEvent should create new events from a noteOn/noteOff pair', function(){
+    const track = new Track();
+    expect(track.events.length).to.equal(0);
+    expect(function(){
+      track.addEvent({subtype: 'noteOn', number: 60});
+      track.addEvent({subtype: 'noteOff', number: 60});
+    }).to.change(function(){return track.events.length}, {by: 2});
+  });
+
+  it('#addEvent should ignore invalid noteOn events', function(){
+    const track = new Track();
+    expect(function(){
+      track.addEvent({subtype: 'noteOn', number: 60});
+      track.addEvent({subtype: 'noteOn', number: 60});
+    }).to.change(function(){return track.events.length}, {by: 1});
+  });
+
+  it('#addEvent should ignore invalid noteOff events', function(){
+    const track = new Track();
+    expect(function(){
+      track.addEvent({subtype: 'noteOff', number: 60});
+      track.addEvent({subtype: 'noteOn', number: 60});
+      track.addEvent({subtype: 'noteOff', number: 60});
+      track.addEvent({subtype: 'noteOff', number: 60});
+    }).to.change(function(){return track.events.length}, {by: 2});
   });
 
   it('#events should return an array of all events', function(){
