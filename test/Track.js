@@ -2,6 +2,7 @@ import Track from '../src/Track';
 import MidiReader from '../src/MidiReader';
 import Midi from '../src/Midi';
 import Note from '../src/Note';
+import Event from '../src/Event';
 import {expect} from 'chai';
 import fs from 'fs';
 
@@ -24,9 +25,21 @@ describe('Track', function(){
 
   it('#addEvent should add an event to this track\'s array of events', function(){
     const track = new Track();
-    expect(track.events.length).to.equal(0);
-    track.addEvent({});
-    expect(track.events.length).to.equal(1);
+    const event = new Event();
+    expect(function(){
+      track.addEvent(event);
+    }).to.change(function(){
+      return track.events.length
+    }, {
+      by: 1
+    });
+  });
+
+  it('#addEvent should associate itself to the given event', function(){
+    const track = new Track();
+    const event = new Event();
+    track.addEvent(event);
+    expect(event.track).to.equal(track);
   });
 
   it('#addEvent should create a new note from a noteOn/noteOff pair', function(){
@@ -34,7 +47,11 @@ describe('Track', function(){
     expect(function(){
       track.addEvent({subtype: 'noteOn', number: 60});
       track.addEvent({subtype: 'noteOff', number: 60});
-    }).to.change(function(){return track.notes.length}, {by: 1});
+    }).to.change(function(){
+      return track.notes.length
+    }, {
+      by: 1
+    });
   });
 
   it('#addEvent should create new events from a noteOn/noteOff pair', function(){
@@ -43,7 +60,11 @@ describe('Track', function(){
     expect(function(){
       track.addEvent({subtype: 'noteOn', number: 60});
       track.addEvent({subtype: 'noteOff', number: 60});
-    }).to.change(function(){return track.events.length}, {by: 2});
+    }).to.change(function(){
+      return track.events.length
+    }, {
+      by: 2
+    });
   });
 
   it('#addEvent should ignore invalid noteOn events', function(){
@@ -51,7 +72,11 @@ describe('Track', function(){
     expect(function(){
       track.addEvent({subtype: 'noteOn', number: 60});
       track.addEvent({subtype: 'noteOn', number: 60});
-    }).to.change(function(){return track.events.length}, {by: 1});
+    }).to.change(function(){
+      return track.events.length
+    }, {
+      by: 1
+    });
   });
 
   it('#addEvent should ignore invalid noteOff events', function(){
@@ -61,7 +86,11 @@ describe('Track', function(){
       track.addEvent({subtype: 'noteOn', number: 60});
       track.addEvent({subtype: 'noteOff', number: 60});
       track.addEvent({subtype: 'noteOff', number: 60});
-    }).to.change(function(){return track.events.length}, {by: 2});
+    }).to.change(function(){
+      return track.events.length
+    }, {
+      by: 2
+    });
   });
 
   it('#events should return an array of all events', function(){
