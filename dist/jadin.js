@@ -619,6 +619,10 @@ var Track = (function () {
       _event.tick = currentTick;
       this.addEvent(_event);
     }
+    // remove unpaired noteOn events
+    for (var number in this._noteOnEvents) {
+      this.removeEvent(this._noteOnEvents[number]);
+    }
   }
 
   _createClass(Track, [{
@@ -631,23 +635,29 @@ var Track = (function () {
           var invalidEvent = this._noteOnEvents[event.number];
           if (!!invalidEvent) {
             // previous noteOn event was invalid
-            this.events.splice(this.events.indexOf(invalidEvent), 1); // remove that event
+            this.removeEvent(invalidEvent);
           }
           this._noteOnEvents[event.number] = event;
           break;
         case 'noteOff':
           var noteOnEvent = this._noteOnEvents[event.number];
-          if (!!noteOnEvent) {
-            this._noteOnEvents[event.number] = undefined;
+          if (!noteOnEvent || noteOnEvent.tick >= event.tick) {
+            // this noteOff event is invalid - needs corresponding preceding noteOn event
+            this.removeEvent(event);
+          } else {
             var note = new _Note2['default'](noteOnEvent, event);
             note.track = this;
             this.notes.push(note);
-          } else {
-            // this noteOff event is invalid
-            this.events.pop(); // remove this event
+            delete this._noteOnEvents[event.number];
           }
           break;
       }
+    }
+  }, {
+    key: 'removeEvent',
+    value: function removeEvent(event) {
+      var index = this.events.lastIndexOf(event); // index will typically be near the end of the array
+      this.events.splice(index, 1);
     }
   }, {
     key: 'notesOnAt',

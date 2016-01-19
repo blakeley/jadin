@@ -14,7 +14,7 @@ var cScaleData = fs.readFileSync('fixtures/c.mid', 'binary');
 var cScaleMidi = new Midi(cScaleData);
 
 describe('Track', function(){
-  it('#contsructor should construct a Track instance given binary track data', function(){
+  it('#constructor should construct a Track instance given binary track data', function(){
     expect(new Track('\x00\x91\x3e\x34\x00\x81\x3e\x34')).to.not.be.null();
   });
 
@@ -67,7 +67,7 @@ describe('Track', function(){
     });
   });
 
-  it('#addEvent should ignore invalid noteOn events', function(){
+  it('#addEvent should ignore unpaired noteOn events', function(){
     const track = new Track();
     expect(function(){
       track.addEvent({subtype: 'noteOn', number: 60});
@@ -79,7 +79,15 @@ describe('Track', function(){
     });
   });
 
-  it('#addEvent should ignore invalid noteOff events', function(){
+  it('addEvent should not create a new note from a removed noteOn event', function(){
+    const track = new Track();
+    track.addEvent({subtype: 'noteOn', number: 60});
+    track.addEvent({subtype: 'noteOn', number: 60});
+    track.addEvent({subtype: 'noteOff', number: 60})
+    expect(track.events[0]).to.equal(track.notes[0].onEvent);
+  });
+
+  it('#addEvent should ignore unpaired noteOff events', function(){
     const track = new Track();
     expect(function(){
       track.addEvent({subtype: 'noteOff', number: 60});
@@ -92,6 +100,38 @@ describe('Track', function(){
       by: 2
     });
   });
+
+  it('#addEvent should ignore noteOff events following simultaneous noteOn events', function(){
+    const track = new Track();
+    expect(function(){
+      track.addEvent({tick: 480, 'subtype': 'noteOn', number: 60});
+      track.addEvent({tick: 480, 'subtype': 'noteOff', number: 60});
+    }).to.change(function(){
+      return track.events.length
+    }, {
+      by: 1
+    });
+  });
+
+  it('#removeEvent should remove the given event from the events array', function(){
+    const track = new Track();
+    const event = new Event();
+    track.addEvent({tick: 0});
+    track.addEvent(event);
+    track.addEvent({tick: 2});
+    expect(function(){
+      track.removeEvent(event);
+    }).to.change(function(){
+      return track.events.length;
+    }, {
+      by: -1
+    });
+  });
+
+  it('#constructor should remove unpaired noteOn events', function(){
+    const track = new Track('\x00\x91\x3e\x34');
+    expect(track.events.length).to.equal(0);
+  })
 
   it('#events should return an array of all events', function(){
     expect(cScaleMidi.tracks[0].events).to.not.be.undefined();

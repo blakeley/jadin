@@ -15,6 +15,10 @@ export default class Track {
       event.tick  = currentTick;
       this.addEvent(event);
     }
+    // remove unpaired noteOn events
+    for(const number in this._noteOnEvents){
+      this.removeEvent(this._noteOnEvents[number]);
+    }
   }
 
   addEvent(event){
@@ -22,24 +26,30 @@ export default class Track {
     this.events.push(event);
     switch(event.subtype){
       case 'noteOn':
-        const invalidEvent = this._noteOnEvents[event.number]
+        const invalidEvent = this._noteOnEvents[event.number];
         if(!!invalidEvent){ // previous noteOn event was invalid
-          this.events.splice(this.events.indexOf(invalidEvent), 1); // remove that event
+          this.removeEvent(invalidEvent);
         }
         this._noteOnEvents[event.number] = event;
         break;
       case 'noteOff':
         const noteOnEvent = this._noteOnEvents[event.number];
-        if (!!noteOnEvent){
-          this._noteOnEvents[event.number] = undefined;
+        if(!noteOnEvent || noteOnEvent.tick >= event.tick){
+          // this noteOff event is invalid - needs corresponding preceding noteOn event
+          this.removeEvent(event);
+        } else {
           const note = new Note(noteOnEvent, event);
           note.track = this;
           this.notes.push(note);
-        } else { // this noteOff event is invalid
-          this.events.pop(); // remove this event
+          delete this._noteOnEvents[event.number];
         }
         break;
     }
+  }
+
+  removeEvent(event){
+    const index = this.events.lastIndexOf(event); // index will typically be near the end of the array
+    this.events.splice(index, 1)
   }
 
   get index() {
