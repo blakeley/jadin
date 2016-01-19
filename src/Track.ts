@@ -1,7 +1,14 @@
 import MidiReader from './MidiReader';
 import Note from './Note';
+import Event from './Event';
+import Midi from './Midi';
 
 export default class Track {
+  events: Event[];
+  notes: Note[];
+  _noteOnEvents: {[key: number]: Event};
+  midi: Midi;
+
   constructor(data='') {
     this.events = [];
     this.notes = [];
@@ -21,7 +28,7 @@ export default class Track {
     }
   }
 
-  addEvent(event){
+  addEvent(event: Event){
     event.track = this;
     this.events.push(event);
     switch(event.subtype){

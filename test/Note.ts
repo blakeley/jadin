@@ -1,14 +1,14 @@
 import Midi from '../src/Midi';
 import Note from '../src/Note';
 import {expect} from 'chai';
-import fs from 'fs';
+import * as fs from 'fs';
 
 var cScaleData = fs.readFileSync('fixtures/c.mid', 'binary');
 var cScaleMidi = new Midi(cScaleData);
 
 describe('Note', function(){
   it('should construct a Note instance', function(){
-    expect(new Note()).to.not.be.null();
+    expect(new Note()).to.not.be.null('');
   });
 
   it('#number should return this note\'s MIDI number', function(){
@@ -28,7 +28,7 @@ describe('Note', function(){
   });
 
   it('#onTick= should not set the onTick to be greater than the offTick', function(){
-    const note = new Note({tick: 2}, {tick: 4})
+    const note = new Note({tick: 2} as any, {tick: 4} as any);
     try {
       note.onTick = 5;
     } catch(e) {
@@ -37,7 +37,7 @@ describe('Note', function(){
   });
 
   it('#offTick= should not set the offTick to be less than the onTick', function(){
-    const note = new Note({tick: 2}, {tick: 4})
+    const note = new Note({tick: 2} as any, {tick: 4} as any);
     try {
       note.offTick = 1;
     } catch(e) {

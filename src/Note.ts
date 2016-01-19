@@ -1,5 +1,12 @@
+import Event from './Event';
+import Track from './Track';
+
 export default class Note {
-  constructor(onEvent={}, offEvent={}) {
+  onEvent: Event;
+  offEvent: Event;
+  track: Track;
+
+  constructor(onEvent = new Event(), offEvent = new Event()) {
     this.onEvent = onEvent;
     this.offEvent = offEvent;
     onEvent.note = this;

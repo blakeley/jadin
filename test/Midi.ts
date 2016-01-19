@@ -1,6 +1,6 @@
 import Midi from '../src/Midi';
 import {expect} from 'chai';
-import fs from 'fs';
+import * as fs from 'fs';
 import Cursor from '../src/Cursor';
 
 const cScaleData = fs.readFileSync('./fixtures/c.mid', 'binary');
@@ -8,16 +8,16 @@ const cScaleMidi = new Midi(cScaleData);
 
 describe('Midi', function(){
   it('#constructor should construct a Midi instance given binary data', function(){
-    expect(cScaleMidi).to.not.be.null()
+    expect(cScaleMidi).to.not.be.null('')
   });
 
   it('#constructor should construct a default Midi instance given no arguments', function() {
     const defaultMidi = new Midi();
-    expect(defaultMidi).to.not.be.null();
+    expect(defaultMidi).to.not.be.null('');
     expect(defaultMidi.format).to.equal(0);
     expect(defaultMidi.ppqn).to.equal(480);
-    expect(defaultMidi.notes).to.not.be.null();
-    expect(defaultMidi.notesOnAt(0)).to.not.be.null();
+    expect(defaultMidi.notes).to.not.be.null('');
+    expect(defaultMidi.notesOnAt(0)).to.not.be.null('');
     expect(defaultMidi.duration).to.equal(0);
     expect(defaultMidi.tickToSecond(960)).to.equal(1);
   });
@@ -42,7 +42,7 @@ describe('Midi', function(){
   });
 
   it('#events should return an array of all events', function(){
-    expect(cScaleMidi.events).to.not.be.undefined();
+    expect(cScaleMidi.events).to.not.be.undefined('');
     expect(cScaleMidi.events.length).to.equal(28);
   });
 
@@ -58,7 +58,7 @@ describe('Midi', function(){
   });
 
   it('#notes should return an array of all notes', function(){
-    expect(cScaleMidi.notes).to.not.be.undefined();
+    expect(cScaleMidi.notes).to.not.be.undefined('');
     expect(cScaleMidi.notes.length).to.equal(8);
   });
 
@@ -79,7 +79,7 @@ describe('Midi', function(){
   it('#tickToSecond should be memoized', function(){
     expect(cScaleMidi.tickToSecond(960)).to.equal(1.0);
     expect(cScaleMidi.tickToSecond(960)).to.equal(1.0);
-    expect(cScaleMidi._tickToSecond[960]).to.equal(1.0);
+    expect(cScaleMidi["_tickToSecond"][960]).to.equal(1.0);
   });
 
   it('#tempoEvents should return all setTempo events', function(){
@@ -119,9 +119,5 @@ describe('Midi', function(){
     expect(cursor.events[0].tick).to.be.lte(cursor.events[1].tick);
     expect(cursor.events[1].tick).to.be.lte(cursor.events[2].tick);
     expect(cursor.events[2].tick).to.be.lte(cursor.events[3].tick);
-
   });
-
-
-
 });

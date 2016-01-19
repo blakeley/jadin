@@ -3,7 +3,7 @@ import {expect} from 'chai';
 
 describe('Cursor', function(){
   it('#new should construct a Cursor instance', function(){
-    expect(new Cursor([])).to.not.be.null();
+    expect(new Cursor([])).not.to.be.null;
   });
 
   it('#nextEvent returns the event immediately following the current position', function(){
