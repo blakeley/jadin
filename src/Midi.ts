@@ -2,7 +2,7 @@ import MidiReader from './MidiReader';
 import Track from './Track';
 import Cursor from './Cursor';
 import Event from './Event';
-import { Note } from './jadin';
+import Note from './Note';
 
 export default class Midi {
   format = 0;
@@ -91,10 +91,10 @@ export default class Midi {
   }
 
   notesOnAt(second: number): Note[] {
-    return this.tracks.map(track => track.notesOnAt(second)).flat();
+    return [].concat(...this.tracks.map(track => track.notesOnAt(second)) as any);
   }
 
   notesOnDuring(onSecond: number, offSecond: number): Note[] {
-    return this.tracks.map(track => track.notesOnDuring(onSecond, offSecond)).flat();
+    return [].concat(...this.tracks.map(track => track.notesOnDuring(onSecond, offSecond)) as any);
   }
 }

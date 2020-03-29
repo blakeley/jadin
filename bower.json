@@ -1,7 +1,7 @@
 {
   "name": "jadin",
   "description": "A library for parsing MIDI files",
-  "main": "dist/jadin.js",
+  "main": "lib/jadin.js",
   "authors": [
     "Brandon Blakeley"
   ],
