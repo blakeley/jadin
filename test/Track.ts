@@ -13,12 +13,12 @@ var cScaleMidi = new Midi(cScaleData);
 
 describe('Track', function(){
   it('#constructor should construct a Track instance given binary track data', function(){
-    expect(new Track('\x00\x91\x3e\x34\x00\x81\x3e\x34')).to.be.a('Track');
+    expect(new Track('\x00\x91\x3e\x34\x00\x81\x3e\x34')).not.to.be.null;
   });
 
   it('#constructor should construct a Track instance given no arguments', function(){
     const defaultTrack = new Track();
-    expect(new Track()).to.be.a('Track');
+    expect(new Track()).not.to.be.null;
   });
 
   it('#addEvent should add an event to this track\'s array of events', function(){
@@ -132,13 +132,13 @@ describe('Track', function(){
   })
 
   it('#events should return an array of all events', function(){
-    expect(cScaleMidi.tracks[0].events).to.not.be.undefined('') ;
+    expect(cScaleMidi.tracks[0].events).to.not.be.undefined;
     expect(cScaleMidi.tracks[0].events.length).to.equal(6);
     expect(cScaleMidi.tracks[1].events.length).to.equal(11);
   });
 
   it('#notes should return an array of all notes', function(){
-    expect(cScaleMidi.tracks[1].notes).to.not.be.undefined('');
+    expect(cScaleMidi.tracks[1].notes).to.not.be.undefined;
     expect(cScaleMidi.tracks[1].notes.length).to.equal(4);
     expect(cScaleMidi.tracks[1].notes[0].constructor).to.equal(Note);
   });

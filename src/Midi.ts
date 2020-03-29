@@ -10,7 +10,7 @@ export default class Midi {
   private _tickToSecond: {[key: number]: number} = {};
   private _tempoEvents: Event[] = [];
 
-  constructor(data: string = '') {
+  constructor(data?: string) {
     if(!!data){
       const reader = new MidiReader(data);
 
@@ -30,7 +30,7 @@ export default class Midi {
     }
   }
 
-  createTrack(data: string = '') {
+  createTrack(data?: string) {
     const track = new Track(data);
     track.midi = this;
     this.tracks.push(track);
@@ -55,7 +55,7 @@ export default class Midi {
   }
 
   get tempoEvents() {
-    if(this._tempoEvents) return this._tempoEvents; // return if memoized
+    if(this._tempoEvents.length > 0) return this._tempoEvents; // return if memoized
 
     // format 0: All events are on the zeroth track, including tempo events
     // format 1: All tempo events are on the zeroth track

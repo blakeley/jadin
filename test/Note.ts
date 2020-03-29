@@ -8,7 +8,7 @@ var cScaleMidi = new Midi(cScaleData);
 
 describe('Note', function(){
   it('should construct a Note instance', function(){
-    expect(new Note()).to.not.be.null('');
+    expect(new Note()).to.not.be.null;
   });
 
   it('#number should return this note\'s MIDI number', function(){
