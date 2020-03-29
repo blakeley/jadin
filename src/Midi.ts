@@ -2,6 +2,7 @@ import MidiReader from './MidiReader';
 import Track from './Track';
 import Cursor from './Cursor';
 import Event from './Event';
+import { Note } from './jadin';
 
 export default class Midi {
   format = 0;
@@ -38,7 +39,7 @@ export default class Midi {
   }
 
   newCursor() {
-    return new Cursor(this.events.sort(function(e1,e2){return e1.tick - e2.tick}));
+    return new Cursor(this.events.sort(function(e1,e2){return e1.tick! - e2.tick!}));
   }
 
   get notes() {
@@ -68,10 +69,10 @@ export default class Midi {
   get duration() {
     return this.notes
       .map(function(note){return note.offSecond})
-      .reduce(function(a,b){return Math.max(a,b)}, 0)
+      .reduce(function(a,b){return Math.max(a!, b!)}, 0)
   }
 
-  tickToSecond(tick) {
+  tickToSecond(tick: number) {
     if(this._tickToSecond[tick]) return this._tickToSecond[tick]
 
     var currentTick = 0;
@@ -79,25 +80,21 @@ export default class Midi {
     var totalTime = 0;
     for (var i = 0; i < this.tempoEvents.length; i++) {
       var event = this.tempoEvents[i];
-      if(event.tick >= tick) break;
-      totalTime += ((event.tick - currentTick) / this.ppqn) * currentTempo / 1000000.0;
-      currentTick = event.tick;
-      currentTempo = event.tempo;
+      if(event.tick! >= tick) break;
+      totalTime += ((event.tick! - currentTick) / this.ppqn) * currentTempo / 1000000.0;
+      currentTick = event.tick!;
+      currentTempo = event.tempo!;
     }
 
     totalTime += ((tick - currentTick) / this.ppqn) * currentTempo / 1000000.0;
     return this._tickToSecond[tick] = totalTime;
   }
 
-  notesOnAt(second) {
-    return [].concat.apply([], this.tracks.map(function(track){
-      return track.notesOnAt(second);
-    }));
+  notesOnAt(second: number): Note[] {
+    return this.tracks.map(track => track.notesOnAt(second)).flat();
   }
 
-  notesOnDuring(onSecond, offSecond) {
-    return [].concat.apply([], this.tracks.map(function(track){
-      return track.notesOnDuring(onSecond, offSecond);
-    }));
+  notesOnDuring(onSecond: number, offSecond: number): Note[] {
+    return this.tracks.map(track => track.notesOnDuring(onSecond, offSecond)).flat();
   }
 }

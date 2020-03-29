@@ -36,10 +36,10 @@ export default class Event {
   constructor(){}
 
   get midi(): Midi|null {
-    return this.track.midi;
+    return this.track!.midi;
   }
 
   get second(): number|null {
-    return this.midi.tickToSecond(this.tick);
+    return this.midi!.tickToSecond(this.tick!);
   }
 }
