@@ -10,7 +10,7 @@ track.addEvent(event)
 
 describe('Event', function(){
   it('#new should construct an Event instance', function(){
-    expect(event).to.not.be.null();
+    expect(event).not.to.be.null;
   });
 
   it('#midi should return the associated Midi object', function(){

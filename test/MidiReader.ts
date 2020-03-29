@@ -1,13 +1,13 @@
 import MidiReader from '../src/MidiReader';
 import {expect} from 'chai';
-import fs from 'fs';
+import * as fs from 'fs';
 
 const cScaleData = fs.readFileSync('fixtures/c.mid', 'binary');
 
 describe('MidiReader', function(){
   it('should construct a MidiReader instance', function(){
     const cScaleMidiReader = new MidiReader(cScaleData);
-    expect(cScaleMidiReader).to.not.be.null();
+    expect(cScaleMidiReader).to.not.be.null;
   });
 
   it('#read should read and return the requested number of bytes', function(){

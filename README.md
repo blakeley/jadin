@@ -1,6 +1,6 @@
 # About
 
-Jadin is a javascript MIDI parsing library.
+Jadin is a Typescript MIDI parsing library.
 
 # Install
 

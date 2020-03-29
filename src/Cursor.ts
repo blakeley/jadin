@@ -1,4 +1,10 @@
+import Event from './Event';
+
 export default class Cursor {
+  events: Event[];
+  index: number;
+  second: number;
+
   constructor(events){
     this.events = events;
     this.index = 0;

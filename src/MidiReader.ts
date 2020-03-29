@@ -1,7 +1,11 @@
 import Event from './Event';
 
 export default class MidiReader {
-  constructor(data) {
+  data: string;
+  position: number;
+  lastStatusByte: number;
+
+  constructor(data: string) {
     this.data = data;
     this.position = 0;
   }
