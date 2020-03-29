@@ -7,7 +7,7 @@ export default class Track {
   events: Event[];
   notes: Note[];
   _noteOnEvents: {[key: number]: Event};
-  midi: Midi;
+  midi!: Midi;
 
   constructor(data='') {
     this.events = [];
@@ -17,9 +17,9 @@ export default class Track {
     let reader = new MidiReader(data);
     let currentTick = 0;
     while (!reader.isAtEndOfFile()) {
-      const event = reader.readEvent();
-      currentTick += event.deltaTime;
-      event.tick  = currentTick;
+      const event = reader.readEvent()!;
+      currentTick += event.deltaTime!;
+      event!.tick  = currentTick;
       this.addEvent(event);
     }
     // remove unpaired noteOn events
@@ -33,28 +33,28 @@ export default class Track {
     this.events.push(event);
     switch(event.subtype){
       case 'noteOn':
-        const invalidEvent = this._noteOnEvents[event.number];
+        const invalidEvent = this._noteOnEvents[event.number!];
         if(!!invalidEvent){ // previous noteOn event was invalid
           this.removeEvent(invalidEvent);
         }
-        this._noteOnEvents[event.number] = event;
+        this._noteOnEvents[event.number!] = event;
         break;
       case 'noteOff':
-        const noteOnEvent = this._noteOnEvents[event.number];
-        if(!noteOnEvent || noteOnEvent.tick >= event.tick){
+        const noteOnEvent = this._noteOnEvents[event.number!];
+        if(!noteOnEvent || noteOnEvent.tick! >= event.tick!){
           // this noteOff event is invalid - needs corresponding preceding noteOn event
           this.removeEvent(event);
         } else {
           const note = new Note(noteOnEvent, event);
           note.track = this;
           this.notes.push(note);
-          delete this._noteOnEvents[event.number];
+          delete this._noteOnEvents[event.number!];
         }
         break;
     }
   }
 
-  removeEvent(event){
+  removeEvent(event: Event){
     const index = this.events.lastIndexOf(event); // index will typically be near the end of the array
     this.events.splice(index, 1)
   }
@@ -63,13 +63,13 @@ export default class Track {
     return this.midi.tracks.indexOf(this);
   }
 
-  notesOnAt(second) {
+  notesOnAt(second: number) {
     return this.notes.filter(function(note){
       return note.onAt(second);
     });
   }
 
-  notesOnDuring(onSecond, offSecond) {
+  notesOnDuring(onSecond: number, offSecond: number) {
     return this.notes.filter(function(note){
       return note.onDuring(onSecond, offSecond);
     });

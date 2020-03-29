@@ -116,8 +116,8 @@ describe('Midi', function(){
   it('#newCursor should order its events by ascending tick', function(){
     const cursor = cScaleMidi.newCursor();
 
-    expect(cursor.events[0].tick).to.be.lte(cursor.events[1].tick);
-    expect(cursor.events[1].tick).to.be.lte(cursor.events[2].tick);
-    expect(cursor.events[2].tick).to.be.lte(cursor.events[3].tick);
+    expect(cursor.events[0].tick!).to.be.lte(cursor.events[1].tick!);
+    expect(cursor.events[1].tick!).to.be.lte(cursor.events[2].tick!);
+    expect(cursor.events[2].tick!).to.be.lte(cursor.events[3].tick!);
   });
 });

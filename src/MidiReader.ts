@@ -3,20 +3,20 @@ import Event from './Event';
 export default class MidiReader {
   data: string;
   position: number;
-  lastStatusByte: number;
+  lastStatusByte!: number;
 
   constructor(data: string) {
     this.data = data;
     this.position = 0;
   }
 
-  read(length) {
+  read(length: number) {
     const result = this.data.substr(this.position, length);
     this.position += length;
     return result;
   }
 
-  readInt(numberOfBytes) {
+  readInt(numberOfBytes: number) {
     let result = 0;
 
     while(numberOfBytes > 0){
@@ -116,7 +116,7 @@ export default class MidiReader {
           event.subtype = 'smpteOffset';
           if (length != 5) throw "Length for this smpteOffset event was " + length + ", but must be 5";
           const hourByte = this.readInt(1);
-          event.frameRate = {0: 24, 1: 25, 2: 29.97, 3: 30}[hourByte >> 6];
+          event.frameRate = ({0: 24, 1: 25, 2: 29.97, 3: 30} as any)[hourByte >> 6];
           event.hours = hourByte & 0x1f;
           event.minutes = this.readInt(1);
           event.seconds = this.readInt(1);
@@ -136,7 +136,7 @@ export default class MidiReader {
           if (length != 2) throw "Length for this keySignature event was " + length + ", but must be 2";
           event.key = this.readInt(1);
           if (event.key > 127) event.key = 128 - event.key;
-          event.scale = {0: 'major', 1: 'minor'}[this.readInt(1)];
+          event.scale = ({0: 'major', 1: 'minor'} as any)[this.readInt(1)];
           return event;
         case 0x7f:
           event.subtype = 'sequencerSpecific';

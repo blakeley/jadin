@@ -96,7 +96,7 @@ describe('MidiReader', function(){
   it('#readEvent should read a noteOff event', function(){
     // deltaTime, 8n, number, velocity 
     const reader = new MidiReader('\x00\x81\x3c\x32');
-    const event = reader.readEvent();
+    const event = reader.readEvent()!;
     expect(event.deltaTime).to.equal(0);
     expect(event.type).to.equal('channel');
     expect(event.subtype).to.equal('noteOff');
@@ -107,8 +107,8 @@ describe('MidiReader', function(){
 
   it('#readEvent should read a noteOff event during a running status', function(){
     const reader = new MidiReader('\x00\x81\x3c\x32\x01\x3d\x33');
-    reader.readEvent();
-    const event = reader.readEvent();
+    reader.readEvent()!;
+    const event = reader.readEvent()!;
     expect(event.deltaTime).to.equal(1);
     expect(event.type).to.equal('channel');
     expect(event.subtype).to.equal('noteOff');
@@ -120,7 +120,7 @@ describe('MidiReader', function(){
   it('#readEvent should read a noteOn event', function(){
     // deltaTime, 9n, number, velocity
     const reader = new MidiReader('\x00\x91\x3e\x34');
-    const event = reader.readEvent();
+    const event = reader.readEvent()!;
     expect(event.deltaTime).to.equal(0);
     expect(event.type).to.equal('channel');
     expect(event.subtype).to.equal('noteOn');
@@ -131,7 +131,7 @@ describe('MidiReader', function(){
 
   it('#readEvent should read a noteOn event with velocity zero as a noteOff event', function(){
     const reader = new MidiReader('\x00\x91\x3f\x00');
-    const event = reader.readEvent();
+    const event = reader.readEvent()!;
     expect(event.deltaTime).to.equal(0);
     expect(event.type).to.equal('channel');
     expect(event.subtype).to.equal('noteOff');
@@ -143,7 +143,7 @@ describe('MidiReader', function(){
   it('#readEvent should read an aftertouch event', function(){
     // deltaTime, an, number, pressure
     const reader = new MidiReader('\x00\xa1\x40\x35');
-    const event = reader.readEvent();
+    const event = reader.readEvent()!;
     expect(event.deltaTime).to.equal(0);
     expect(event.type).to.equal('channel');
     expect(event.subtype).to.equal('aftertouch');
@@ -155,7 +155,7 @@ describe('MidiReader', function(){
   it('#readEvent should read a controller event', function(){
     // deltaTime, bn, controller, value
     const reader = new MidiReader('\x00\xb1\x41\x36');
-    const event = reader.readEvent();
+    const event = reader.readEvent()!;
     expect(event.deltaTime).to.equal(0);
     expect(event.type).to.equal('channel');
     expect(event.subtype).to.equal('controller');
@@ -166,7 +166,7 @@ describe('MidiReader', function(){
   it('#readEvent should read a program event', function(){
     // deltaTime, cn, program
     const reader = new MidiReader('\x00\xc1\x42');
-    const event = reader.readEvent();
+    const event = reader.readEvent()!;
     expect(event.deltaTime).to.equal(0);
     expect(event.type).to.equal('channel');
     expect(event.subtype).to.equal('program');
@@ -176,7 +176,7 @@ describe('MidiReader', function(){
   it('#readEvent should read a channelPressure event', function(){
     // deltaTime, dn, pressure
     const reader = new MidiReader('\x00\xd1\x43');
-    const event = reader.readEvent();
+    const event = reader.readEvent()!;
     expect(event.deltaTime).to.equal(0);
     expect(event.type).to.equal('channel');
     expect(event.subtype).to.equal('channelPressure');
@@ -186,7 +186,7 @@ describe('MidiReader', function(){
   it('#readEvent should read a channelPressure event', function(){
     // deltaTime, dn, pressure
     const reader = new MidiReader('\x00\xd1\x43');
-    const event = reader.readEvent();
+    const event = reader.readEvent()!;
     expect(event.deltaTime).to.equal(0);
     expect(event.type).to.equal('channel');
     expect(event.subtype).to.equal('channelPressure');
@@ -196,7 +196,7 @@ describe('MidiReader', function(){
   it('#readEvent should read a pitchBend event', function(){
     // deltaTime, en, lsb, msb
     const reader = new MidiReader('\x00\xe1\x05\x03');
-    const event = reader.readEvent();
+    const event = reader.readEvent()!;
     expect(event.deltaTime).to.equal(0);
     expect(event.type).to.equal('channel');
     expect(event.subtype).to.equal('pitchBend');
@@ -205,7 +205,7 @@ describe('MidiReader', function(){
 
   it('#readEvent should read a sequenceNumber meta event', function(){
     const reader = new MidiReader('\x00\xff\x00\x02\x01\x03')
-    const event = reader.readEvent();
+    const event = reader.readEvent()!;
     expect(event.deltaTime).to.equal(0);
     expect(event.type).to.equal('meta');
     expect(event.subtype).to.equal('sequenceNumber');
@@ -214,7 +214,7 @@ describe('MidiReader', function(){
 
   it('#readEvent should read a text meta event', function(){
     const reader = new MidiReader('\x00\xff\x01\x09some text');
-    const event = reader.readEvent();
+    const event = reader.readEvent()!;
     expect(event.deltaTime).to.equal(0);
     expect(event.type).to.equal('meta');
     expect(event.subtype).to.equal('text');
@@ -223,7 +223,7 @@ describe('MidiReader', function(){
 
   it('#readEvent should read a copyright meta event', function(){
     const reader = new MidiReader('\x00\xff\x02\x0f© Noteriver.com');
-    const event = reader.readEvent();
+    const event = reader.readEvent()!;
     expect(event.deltaTime).to.equal(0);
     expect(event.type).to.equal('meta');
     expect(event.subtype).to.equal('copyright');
@@ -232,7 +232,7 @@ describe('MidiReader', function(){
 
   it('#readEvent should read a trackName meta event', function(){
     const reader = new MidiReader('\x00\xff\x03\x0eUnknown Song 1');
-    const event = reader.readEvent();
+    const event = reader.readEvent()!;
     expect(event.deltaTime).to.equal(0);
     expect(event.type).to.equal('meta');
     expect(event.subtype).to.equal('trackName');
@@ -241,7 +241,7 @@ describe('MidiReader', function(){
 
   it('#readEvent should read an instrumentName meta event', function(){
     const reader = new MidiReader('\x00\xff\x04\x07Cowbell');
-    const event = reader.readEvent();
+    const event = reader.readEvent()!;
     expect(event.deltaTime).to.equal(0);
     expect(event.type).to.equal('meta');
     expect(event.subtype).to.equal('instrumentName');
@@ -250,7 +250,7 @@ describe('MidiReader', function(){
 
   it('#readEvent should read a lyric meta event', function(){
     const reader = new MidiReader('\x00\xff\x05\x04hey!');
-    const event = reader.readEvent();
+    const event = reader.readEvent()!;
     expect(event.deltaTime).to.equal(0);
     expect(event.type).to.equal('meta');
     expect(event.subtype).to.equal('lyric');
@@ -259,7 +259,7 @@ describe('MidiReader', function(){
 
   it('#readEvent should read a marker meta event', function(){
     const reader = new MidiReader('\x00\xff\x06\x05Verse');
-    const event = reader.readEvent();
+    const event = reader.readEvent()!;
     expect(event.deltaTime).to.equal(0);
     expect(event.type).to.equal('meta');
     expect(event.subtype).to.equal('marker');
@@ -268,7 +268,7 @@ describe('MidiReader', function(){
 
   it('#readEvent should read a cuePoint meta event', function(){
     const reader = new MidiReader('\x00\xff\x07\x05Solo');
-    const event = reader.readEvent();
+    const event = reader.readEvent()!;
     expect(event.deltaTime).to.equal(0);
     expect(event.type).to.equal('meta');
     expect(event.subtype).to.equal('cuePoint');
@@ -277,7 +277,7 @@ describe('MidiReader', function(){
 
   it('#readEvent should read a programName meta event', function(){
     const reader = new MidiReader('\x00\xff\x08\x08drum kit');
-    const event = reader.readEvent();
+    const event = reader.readEvent()!;
     expect(event.deltaTime).to.equal(0);
     expect(event.type).to.equal('meta');
     expect(event.subtype).to.equal('programName');
@@ -286,7 +286,7 @@ describe('MidiReader', function(){
 
   it('#readEvent should read a deviceName meta event', function(){
     const reader = new MidiReader('\x00\xff\x09\x05Casio');
-    const event = reader.readEvent();
+    const event = reader.readEvent()!;
     expect(event.deltaTime).to.equal(0);
     expect(event.type).to.equal('meta');
     expect(event.subtype).to.equal('deviceName');
@@ -295,7 +295,7 @@ describe('MidiReader', function(){
 
   it('#readEvent should read a channelPrefix meta event', function(){
     const reader = new MidiReader('\x00\xff\x20\x01\x02');
-    const event = reader.readEvent();
+    const event = reader.readEvent()!;
     expect(event.deltaTime).to.equal(0);
     expect(event.type).to.equal('meta');
     expect(event.subtype).to.equal('channelPrefix');
@@ -304,7 +304,7 @@ describe('MidiReader', function(){
 
   it('#readEvent should read a port meta event', function(){
     const reader = new MidiReader('\x00\xff\x21\x01\x03');
-    const event = reader.readEvent();
+    const event = reader.readEvent()!;
     expect(event.deltaTime).to.equal(0);
     expect(event.type).to.equal('meta');
     expect(event.subtype).to.equal('port');
@@ -313,7 +313,7 @@ describe('MidiReader', function(){
 
   it('#readEvent should read an endOfTrack meta event', function(){
     const reader = new MidiReader('\x00\xff\x2f\x00');
-    const event = reader.readEvent();
+    const event = reader.readEvent()!;
     expect(event.deltaTime).to.equal(0);
     expect(event.type).to.equal('meta');
     expect(event.subtype).to.equal('endOfTrack');
@@ -321,7 +321,7 @@ describe('MidiReader', function(){
 
   it('#readEvent should read a setTempo meta event', function(){
     const reader = new MidiReader('\x00\xff\x51\x03\x07\xA1\x20');
-    const event = reader.readEvent();
+    const event = reader.readEvent()!;
     expect(event.deltaTime).to.equal(0);
     expect(event.type).to.equal('meta');
     expect(event.subtype).to.equal('setTempo');
@@ -330,7 +330,7 @@ describe('MidiReader', function(){
 
   it('#readEvent should read a smpteOffset meta event', function(){
     const reader = new MidiReader('\x00\xff\x54\x05\xc1\x02\x03\x04\x05');
-    const event = reader.readEvent();
+    const event = reader.readEvent()!;
     expect(event.deltaTime).to.equal(0);
     expect(event.type).to.equal('meta');
     expect(event.subtype).to.equal('smpteOffset');
@@ -344,7 +344,7 @@ describe('MidiReader', function(){
 
   it('#readEvent should read a timeSignature meta event', function(){
     const reader = new MidiReader('\x00\xff\x58\x04\x03\x02\x18\x08');
-    const event = reader.readEvent();
+    const event = reader.readEvent()!;
     expect(event.deltaTime).to.equal(0);
     expect(event.type).to.equal('meta');
     expect(event.subtype).to.equal('timeSignature');
@@ -356,7 +356,7 @@ describe('MidiReader', function(){
 
   it('#readEvent should read a keySignature meta event', function(){
     const reader = new MidiReader('\x00\xff\x59\x02\x83\x01');
-    const event = reader.readEvent();
+    const event = reader.readEvent()!;
     expect(event.deltaTime).to.equal(0);
     expect(event.type).to.equal('meta');
     expect(event.subtype).to.equal('keySignature');
@@ -366,7 +366,7 @@ describe('MidiReader', function(){
 
   it('#readEvent should read a sequencerSpecific meta event', function(){
     const reader = new MidiReader('\x00\xff\x7f\x04\x41\x04\x01\x56');
-    const event = reader.readEvent();
+    const event = reader.readEvent()!;
     expect(event.deltaTime).to.equal(0);
     expect(event.type).to.equal('meta');
     expect(event.subtype).to.equal('sequencerSpecific');
@@ -375,7 +375,7 @@ describe('MidiReader', function(){
 
   it('#readEvent should read sysEx events', function(){
     const reader = new MidiReader('\x00\xf0\x05\x7e\x00\x09\x01\xf7');
-    const event = reader.readEvent();
+    const event = reader.readEvent()!;
     expect(event.deltaTime).to.equal(0);
     expect(event.type).to.equal('sysEx');
     expect(event.data).to.equal('\x7e\x00\x09\x01\xf7');

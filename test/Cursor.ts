@@ -1,5 +1,5 @@
-import Cursor from '../src/Cursor';
 import {expect} from 'chai';
+import Cursor from '../src/Cursor';
 
 describe('Cursor', function(){
   it('#new should construct a Cursor instance', function(){
@@ -7,7 +7,7 @@ describe('Cursor', function(){
   });
 
   it('#nextEvent returns the event immediately following the current position', function(){
-    const cursor = new Cursor(['a','b','c']);
+    const cursor = new Cursor(['a','b','c'] as any);
     expect(cursor.nextEvent).to.equal('a');
     cursor.index = 2;
     expect(cursor.nextEvent).to.equal('c');
@@ -19,7 +19,7 @@ describe('Cursor', function(){
         {second: 1, subtype: 'noteOn'},
         {second: 2, subtype: 'noteOn'},
         {second: 3, subtype: 'noteOn'},
-      ]);
+      ] as any);
 
     cursor.forward(1, {
       noteOn: function(){}
@@ -34,7 +34,7 @@ describe('Cursor', function(){
         {second: 1, subtype: 'noteOn'},
         {second: 2, subtype: 'noteOn'},
         {second: 3, subtype: 'noteOn'},
-      ]);
+      ] as any);
 
     cursor.forward(99, {
       noteOn: function(){}
@@ -44,7 +44,7 @@ describe('Cursor', function(){
   });
 
   it('#forward calls the corresponding callback for each event it advances through', function(){
-    const cursor = new Cursor([{second: 1, subtype: 'noteOn'}]);
+    const cursor = new Cursor([{second: 1, subtype: 'noteOn'}] as any);
 
     let callbackFired = false;
     cursor.forward(2, {
@@ -59,19 +59,19 @@ describe('Cursor', function(){
   });
 
   it('#forward works with null callbacks', function(){
-    const cursor = new Cursor([{second: 1, subtype: 'unknown'}]);
+    const cursor = new Cursor([{second: 1, subtype: 'unknown'}] as any);
     cursor.forward(2);
     expect('everthing').to.be.ok;
   });
 
   it('#forward sets second', function(){
-    const cursor = new Cursor([{second: 1, subtype: 'unknown'}]);
+    const cursor = new Cursor([{second: 1, subtype: 'unknown'}] as any);
     cursor.forward(2);
     expect(cursor.second).to.equal(2);
   });
 
   it('#previousEvent returns the event immediately preceding the current position', function(){
-    const cursor = new Cursor(['a','b','c']);
+    const cursor = new Cursor(['a','b','c'] as any);
     expect(cursor.previousEvent).to.be.undefined;
     cursor.index = 2;
     expect(cursor.previousEvent).to.equal('b');    
@@ -83,7 +83,7 @@ describe('Cursor', function(){
         {second: 1, subtype: 'noteOn'},
         {second: 2, subtype: 'noteOn'},
         {second: 3, subtype: 'noteOn'},
-      ]);
+      ] as any);
 
     cursor.index = 4;
     cursor.backward(1, {
@@ -99,7 +99,7 @@ describe('Cursor', function(){
         {second: 1, subtype: 'noteOn'},
         {second: 2, subtype: 'noteOn'},
         {second: 3, subtype: 'noteOn'},
-      ]);
+      ] as any);
 
     cursor.index = 4;
     cursor.backward(-1, {
@@ -110,7 +110,7 @@ describe('Cursor', function(){
   });
 
   it('#backward calls the corresponding callback for each event it advances through', function(){
-    const cursor = new Cursor([{second: 1, subtype: 'noteOn'}]);
+    const cursor = new Cursor([{second: 1, subtype: 'noteOn'}] as any);
     cursor.index = 1;
 
     let callbackFired = false;
@@ -126,15 +126,14 @@ describe('Cursor', function(){
   });
 
   it('#backward works with null callbacks', function(){
-    const cursor = new Cursor([{second: 1, subtype: 'unknown'}]);
+    const cursor = new Cursor([{second: 1, subtype: 'unknown'}] as any);
     cursor.index = 1;
     cursor.backward(0);
     expect('everthing').to.be.ok;
   });
 
-
   it('#backward sets second', function(){
-    const cursor = new Cursor([{second: 1, subtype: 'unknown'}]);
+    const cursor = new Cursor([{second: 1, subtype: 'unknown'}] as any);
     cursor.backward(0);
     expect(cursor.second).to.equal(0);
   });
