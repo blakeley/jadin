@@ -1,7 +1,7 @@
-import Event from './Event';
+import Event from "./Event";
 
 interface Callback {
-  (event: Event):  void;
+  (event: Event): void;
 }
 
 export default class Cursor {
@@ -9,26 +9,25 @@ export default class Cursor {
   index: number;
   second: number;
 
-  constructor(events: Event[]){
-    console.log('event')
+  constructor(events: Event[]) {
     this.events = events;
     this.index = 0;
     this.second = 0;
   }
 
-  get nextEvent(){
+  get nextEvent() {
     return this.events[this.index];
   }
 
-  get previousEvent(){
-    return this.events[this.index-1];
+  get previousEvent() {
+    return this.events[this.index - 1];
   }
 
-  forward(second: number, callbacks: {[key: string]: Callback} = {}){
+  forward(second: number, callbacks: { [key: string]: Callback } = {}) {
     this.second = second;
 
-    while(!!this.nextEvent && this.nextEvent.second! <= second){
-      if(!!callbacks[this.nextEvent.subtype!]){
+    while (!!this.nextEvent && this.nextEvent.second! <= second) {
+      if (!!callbacks[this.nextEvent.subtype!]) {
         callbacks[this.nextEvent.subtype](this.nextEvent);
       }
 
@@ -36,15 +35,15 @@ export default class Cursor {
     }
   }
 
-  backward(second: number, callbacks: {[key: string]: Callback} = {}){
+  backward(second: number, callbacks: { [key: string]: Callback } = {}) {
     this.second = second;
 
-    while(!!this.previousEvent && this.previousEvent.second! > second){
-      if(!!callbacks[this.previousEvent.subtype]){
+    while (!!this.previousEvent && this.previousEvent.second! > second) {
+      if (!!callbacks[this.previousEvent.subtype]) {
         callbacks[this.previousEvent.subtype](this.previousEvent);
       }
 
       this.index--;
-    }    
+    }
   }
 }

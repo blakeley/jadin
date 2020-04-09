@@ -1,7 +1,7 @@
-import Track from './Track';
-import Cursor from './Cursor';
-import Event from './Event';
-import Note from './Note';
+import Track from "./Track";
+import Cursor from "./Cursor";
+import Event from "./Event";
+import Note from "./Note";
 export default class Midi {
     format: number;
     ppqn: number;
