@@ -1,4 +1,4 @@
-import Event from "./Event";
+import { RawEvent } from "./event";
 export default class MidiReader {
     data: string;
     position: number;
@@ -7,7 +7,7 @@ export default class MidiReader {
     read(length: number): string;
     readInt(numberOfBytes: number): number;
     readVLQ(): number;
-    readEvent(): Event | undefined;
+    readEvent(): RawEvent;
     readChunk(): {
         type: string;
         length: number;

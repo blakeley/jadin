@@ -1,19 +1,12 @@
-import Event from "./Event";
-interface Callback {
-    (event: Event): void;
-}
+import { Event, RawEvent } from "./Event";
 export default class Cursor {
-    events: Event[];
+    private readonly events;
     index: number;
     second: number;
+    notesOn: Set<number>;
     constructor(events: Event[]);
-    get nextEvent(): Event;
-    get previousEvent(): Event;
-    forward(second: number, callbacks?: {
-        [key: string]: Callback;
-    }): void;
-    backward(second: number, callbacks?: {
-        [key: string]: Callback;
-    }): void;
+    get nextEvent(): Event<RawEvent>;
+    get previousEvent(): Event<RawEvent>;
+    forward(second: number): Event[];
+    backward(second: number): Event[];
 }
-export {};

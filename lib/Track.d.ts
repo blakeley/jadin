@@ -1,16 +1,16 @@
-import Note from './Note';
-import Event from './Event';
-import Midi from './Midi';
+import Note from "./Note";
+import { Event, RawEvent, NoteOnEvent } from "./Event";
+import Midi from "./Midi";
 export default class Track {
     events: Event[];
     notes: Note[];
     _noteOnEvents: {
-        [key: number]: Event;
+        [key: number]: Event<NoteOnEvent>;
     };
     midi: Midi;
     constructor(data?: string);
-    addEvent(event: Event): void;
-    removeEvent(event: Event): void;
+    addEvent(rawEvent: RawEvent, tick: number): Event;
+    removeEvent(event: Event<RawEvent>): void;
     get index(): number;
     notesOnAt(second: number): Note[];
     notesOnDuring(onSecond: number, offSecond: number): Note[];
