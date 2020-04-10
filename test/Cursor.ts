@@ -1,95 +1,199 @@
 import { expect } from "chai";
+import { NoteOnEvent, NoteOffEvent, Event } from "../src/Event";
 import Cursor from "../src/Cursor";
+import Track from "../src/Track";
+import Midi from "../src/Midi";
 
-describe("Cursor", function () {
-  it("#new should construct a Cursor instance", function () {
-    expect(new Cursor([])).not.to.be.null;
+const MIDI = new Midi();
+const TRACK = new Track();
+TRACK.midi = MIDI;
+
+function createNoteOnEvent(
+  noteNumber: number,
+  second: number
+): Event<NoteOnEvent> {
+  const rawNoteOnEvent: NoteOnEvent = {
+    deltaTime: 0,
+    channel: 1,
+    type: "channel",
+    subtype: "noteOn",
+    noteNumber,
+    velocity: 20,
+  };
+
+  return new Event(rawNoteOnEvent, TRACK, second * 960);
+}
+
+function createNoteOffEvent(
+  noteNumber: number,
+  second: number
+): Event<NoteOffEvent> {
+  const rawNoteOffEvent: NoteOffEvent = {
+    deltaTime: 0,
+    channel: 1,
+    type: "channel",
+    subtype: "noteOff",
+    noteNumber,
+    velocity: 20,
+  };
+
+  return new Event(rawNoteOffEvent, TRACK, second * 960);
+}
+
+describe("Cursor", () => {
+  it("initially has no notesOn", () => {
+    expect(new Cursor([]).notesOn).to.be.empty;
   });
 
-  it("#nextEvent returns the event immediately following the current position", function () {
-    const cursor = new Cursor(["a", "b", "c"] as any);
-    expect(cursor.nextEvent).to.equal("a");
-    cursor.index = 2;
-    expect(cursor.nextEvent).to.equal("c");
+  describe("forward", () => {
+    it("returns all events encountered", () => {
+      const events = [
+        createNoteOnEvent(48, 1),
+        createNoteOnEvent(49, 2),
+        createNoteOnEvent(50, 3),
+        createNoteOnEvent(51, 4),
+      ];
+      const cursor = new Cursor(events);
+
+      expect(cursor.forward(2.5)).to.eql([events[0], events[1]]);
+    });
+
+    it("advances nextEvent to the first event which occurs strictly after the given time", () => {
+      const events = [
+        createNoteOnEvent(48, 1),
+        createNoteOnEvent(49, 2),
+        createNoteOnEvent(50, 3),
+        createNoteOnEvent(51, 4),
+      ];
+      const cursor = new Cursor(events);
+      cursor.forward(2);
+
+      expect(cursor.nextEvent).to.eql(events[2]);
+      expect(cursor.previousEvent).to.eql(events[1]);
+    });
+
+    it("advances beyond the end of the event array", () => {
+      const events = [
+        createNoteOnEvent(48, 1),
+        createNoteOnEvent(49, 2),
+        createNoteOnEvent(50, 3),
+        createNoteOnEvent(51, 4),
+      ];
+      const cursor = new Cursor(events);
+      cursor.forward(9999);
+
+      expect(cursor.nextEvent).to.be.undefined;
+    });
+
+    it("sets second", () => {
+      const cursor = new Cursor([]);
+
+      cursor.forward(7);
+
+      expect(cursor.second).to.equal(7);
+    });
+
+    it("adds notes that were turned on", () => {
+      const events = [
+        createNoteOnEvent(48, 1),
+        createNoteOnEvent(60, 2),
+        createNoteOnEvent(61, 2),
+        createNoteOnEvent(62, 3),
+        createNoteOnEvent(63, 5),
+      ];
+      const cursor = new Cursor(events);
+      cursor.forward(2);
+
+      expect(Array.from(cursor.notesOn)).to.eql([48, 60, 61]);
+    });
+
+    it("removes notes that were turned off", () => {
+      const events = [
+        createNoteOnEvent(60, 1),
+        createNoteOnEvent(61, 2),
+        createNoteOffEvent(60, 3),
+      ];
+      const cursor = new Cursor(events);
+      cursor.forward(4);
+
+      expect(Array.from(cursor.notesOn)).to.eql([61]);
+    });
   });
 
-  it("#forward moves the cursor to the first event which occurs strictly after the given time", function () {
-    const cursor = new Cursor([
-      { second: 0, subtype: "noteOn" },
-      { second: 1, subtype: "noteOn" },
-      { second: 2, subtype: "noteOn" },
-      { second: 3, subtype: "noteOn" },
-    ] as any);
+  describe("backward", () => {
+    it("returns all events encountered", () => {
+      const events = [
+        createNoteOnEvent(48, 1),
+        createNoteOnEvent(49, 2),
+        createNoteOnEvent(50, 3),
+        createNoteOnEvent(51, 4),
+      ];
+      const cursor = new Cursor(events);
 
-    cursor.forward(1);
+      cursor.forward(6);
 
-    expect(cursor.index).to.equal(2);
-  });
+      expect(cursor.backward(2.5)).to.eql([events[3], events[2]]);
+    });
 
-  it("#forward can advance to the end of the event array", function () {
-    const cursor = new Cursor([
-      { second: 0, subtype: "noteOn" },
-      { second: 1, subtype: "noteOn" },
-      { second: 2, subtype: "noteOn" },
-      { second: 3, subtype: "noteOn" },
-    ] as any);
+    it("advances the cursor to the first event which occurs strictly after the given time", () => {
+      const events = [
+        createNoteOnEvent(48, 1),
+        createNoteOnEvent(49, 2),
+        createNoteOnEvent(50, 3),
+        createNoteOnEvent(51, 4),
+      ];
+      const cursor = new Cursor(events);
 
-    cursor.forward(99);
+      cursor.forward(6);
+      cursor.backward(2);
 
-    expect(cursor.index).to.equal(4);
-  });
+      expect(cursor.nextEvent).to.eql(events[2]);
+      expect(cursor.previousEvent).to.eql(events[1]);
+    });
 
-  it("#forward sets second", function () {
-    const cursor = new Cursor([{ second: 1, subtype: "unknown" }] as any);
-    cursor.forward(2);
-    expect(cursor.second).to.equal(2);
-  });
+    it("advances beyond the beginning of the event array", () => {
+      const events = [
+        createNoteOnEvent(48, 1),
+        createNoteOnEvent(49, 2),
+        createNoteOnEvent(50, 3),
+        createNoteOnEvent(51, 4),
+      ];
+      const cursor = new Cursor(events);
+      cursor.backward(-10);
 
-  it("#previousEvent returns the event immediately preceding the current position", function () {
-    const cursor = new Cursor(["a", "b", "c"] as any);
-    expect(cursor.previousEvent).to.be.undefined;
-    cursor.index = 2;
-    expect(cursor.previousEvent).to.equal("b");
-  });
+      expect(cursor.previousEvent).to.be.undefined;
+    });
 
-  it("#backward moves the cursor to the last event which occurs at or after the given time", function () {
-    const cursor = new Cursor([
-      { second: 0, subtype: "noteOn" },
-      { second: 1, subtype: "noteOn" },
-      { second: 2, subtype: "noteOn" },
-      { second: 3, subtype: "noteOn" },
-    ] as any);
+    it("sets second", () => {
+      const cursor = new Cursor([]);
 
-    cursor.index = 4;
-    cursor.backward(1);
+      cursor.backward(7);
 
-    expect(cursor.index).to.equal(2);
-  });
+      expect(cursor.second).to.equal(7);
+    });
 
-  it("#backward can advance to the beginning of the event array", function () {
-    const cursor = new Cursor([
-      { second: 0, subtype: "noteOn" },
-      { second: 1, subtype: "noteOn" },
-      { second: 2, subtype: "noteOn" },
-      { second: 3, subtype: "noteOn" },
-    ] as any);
+    it("adds notes that were turned off", () => {
+      const events = [
+        createNoteOffEvent(48, 1),
+        createNoteOffEvent(60, 2),
+        createNoteOffEvent(61, 2),
+        createNoteOffEvent(62, 3),
+        createNoteOffEvent(63, 4),
+      ];
+      const cursor = new Cursor(events);
+      cursor.forward(5);
+      cursor.backward(1.5);
 
-    cursor.index = 4;
-    cursor.backward(-1);
+      expect(Array.from(cursor.notesOn)).to.eql([63, 62, 61, 60]);
+    });
 
-    expect(cursor.index).to.equal(0);
-  });
+    it("removes notes that were turned on", () => {
+      const events = [createNoteOnEvent(60, 1)];
+      const cursor = new Cursor(events);
+      cursor.forward(2);
+      cursor.backward(1);
 
-  it("#backward works with null callbacks", function () {
-    const cursor = new Cursor([{ second: 1, subtype: "unknown" }] as any);
-    cursor.index = 1;
-    cursor.backward(0);
-    expect("everthing").to.be.ok;
-  });
-
-  it("#backward sets second", function () {
-    const cursor = new Cursor([{ second: 1, subtype: "unknown" }] as any);
-    cursor.backward(0);
-    expect(cursor.second).to.equal(0);
+      expect(cursor.notesOn).to.be.empty;
+    });
   });
 });
