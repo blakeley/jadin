@@ -1,7 +1,7 @@
 import MidiReader from "./MidiReader";
 import Track from "./Track";
 import Cursor from "./Cursor";
-import Event from "./Event";
+import { RawEvent, SetTempoEvent, Event } from "./Event";
 import Note from "./Note";
 
 export default class Midi {
@@ -9,7 +9,7 @@ export default class Midi {
   ppqn: number;
   tracks: Track[];
   private _tickToSecond: { [key: number]: number };
-  private _tempoEvents: Event[];
+  private _tempoEvents: Event<SetTempoEvent>[];
 
   constructor(data?: string) {
     this.format = 0;
@@ -73,15 +73,18 @@ export default class Midi {
     //.sort(function(e1,e2){return e1.tick < e2.tick});
   }
 
-  get tempoEvents() {
+  get tempoEvents(): Event<SetTempoEvent>[] {
     if (this._tempoEvents.length > 0) return this._tempoEvents; // return if memoized
 
+    function isSetTempoEvent(
+      event: Event<RawEvent>
+    ): event is Event<SetTempoEvent> {
+      return event.raw.type === "meta" && event.raw.subtype === "setTempo";
+    }
     // format 0: All events are on the zeroth track, including tempo events
     // format 1: All tempo events are on the zeroth track
     // format 2: Every track has tempo events (not supported)
-    return (this._tempoEvents = this.tracks[0].events.filter(function (event) {
-      return event.subtype == "setTempo";
-    }));
+    return this.tracks[0].events.filter(isSetTempoEvent);
   }
 
   get duration() {
@@ -106,7 +109,7 @@ export default class Midi {
       totalTime +=
         (((event.tick! - currentTick) / this.ppqn) * currentTempo) / 1000000.0;
       currentTick = event.tick!;
-      currentTempo = event.tempo!;
+      currentTempo = event.raw.microsecondsPerBeat;
     }
 
     totalTime +=

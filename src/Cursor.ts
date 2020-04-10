@@ -1,16 +1,10 @@
-import Event from "./Event";
-
-interface Callback {
-  (event: Event): void;
-}
+import { Event } from "./Event";
 
 export default class Cursor {
-  events: Event[];
   index: number;
   second: number;
 
-  constructor(events: Event[]) {
-    this.events = events;
+  constructor(private readonly events: Event[]) {
     this.index = 0;
     this.second = 0;
   }
@@ -23,27 +17,27 @@ export default class Cursor {
     return this.events[this.index - 1];
   }
 
-  forward(second: number, callbacks: { [key: string]: Callback } = {}) {
+  forward(second: number): Event[] {
     this.second = second;
 
+    const events: Event[] = [];
     while (!!this.nextEvent && this.nextEvent.second! <= second) {
-      if (!!callbacks[this.nextEvent.subtype!]) {
-        callbacks[this.nextEvent.subtype](this.nextEvent);
-      }
+      events.push(this.nextEvent);
 
       this.index++;
     }
+    return events;
   }
 
-  backward(second: number, callbacks: { [key: string]: Callback } = {}) {
+  backward(second: number): Event[] {
     this.second = second;
 
+    const events: Event[] = [];
     while (!!this.previousEvent && this.previousEvent.second! > second) {
-      if (!!callbacks[this.previousEvent.subtype]) {
-        callbacks[this.previousEvent.subtype](this.previousEvent);
-      }
+      events.push(this.previousEvent);
 
       this.index--;
     }
+    return events;
   }
 }

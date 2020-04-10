@@ -1,62 +1,70 @@
-import MidiReader from './MidiReader';
-import Note from './Note';
-import Event from './Event';
-import Midi from './Midi';
+import MidiReader from "./MidiReader";
+import Note from "./Note";
+import { Event, RawEvent, NoteOnEvent, NoteOffEvent } from "./Event";
+import Midi from "./Midi";
 
 export default class Track {
   events: Event[];
   notes: Note[];
-  _noteOnEvents: {[key: number]: Event};
+  _noteOnEvents: { [key: number]: Event<NoteOnEvent> };
   midi!: Midi;
 
-  constructor(data='') {
+  constructor(data = "") {
     this.events = [];
     this.notes = [];
-    this._noteOnEvents = {}
+    this._noteOnEvents = {};
 
     let reader = new MidiReader(data);
     let currentTick = 0;
     while (!reader.isAtEndOfFile()) {
-      const event = reader.readEvent()!;
-      currentTick += event.deltaTime!;
-      event!.tick  = currentTick;
-      this.addEvent(event);
+      const rawEvent = reader.readEvent()!;
+      currentTick += rawEvent.deltaTime;
+      this.addEvent(rawEvent, currentTick);
     }
     // remove unpaired noteOn events
-    for(const number in this._noteOnEvents){
+    for (const number in this._noteOnEvents) {
       this.removeEvent(this._noteOnEvents[number]);
     }
   }
 
-  addEvent(event: Event){
-    event.track = this;
+  addEvent(rawEvent: RawEvent, tick: number): Event {
+    const event = new Event(rawEvent, this, tick);
     this.events.push(event);
-    switch(event.subtype){
-      case 'noteOn':
-        const invalidEvent = this._noteOnEvents[event.number!];
-        if(!!invalidEvent){ // previous noteOn event was invalid
-          this.removeEvent(invalidEvent);
-        }
-        this._noteOnEvents[event.number!] = event;
-        break;
-      case 'noteOff':
-        const noteOnEvent = this._noteOnEvents[event.number!];
-        if(!noteOnEvent || noteOnEvent.tick! >= event.tick!){
-          // this noteOff event is invalid - needs corresponding preceding noteOn event
-          this.removeEvent(event);
-        } else {
-          const note = new Note(noteOnEvent, event);
-          note.track = this;
-          this.notes.push(note);
-          delete this._noteOnEvents[event.number!];
-        }
-        break;
+
+    if (rawEvent.type === "channel") {
+      switch (rawEvent.subtype) {
+        case "noteOn":
+          const invalidEvent = this._noteOnEvents[rawEvent.noteNumber];
+          if (!!invalidEvent) {
+            // previous noteOn event was invalid
+            this.removeEvent(invalidEvent);
+          }
+          this._noteOnEvents[rawEvent.noteNumber] = event as Event<NoteOnEvent>;
+          break;
+        case "noteOff":
+          const noteOnEvent = this._noteOnEvents[rawEvent.noteNumber];
+          if (!noteOnEvent || noteOnEvent.tick! >= event.tick!) {
+            // this noteOff event is invalid - needs corresponding preceding noteOn event
+            this.removeEvent(event);
+          } else {
+            const note = new Note(
+              noteOnEvent,
+              event as Event<NoteOffEvent>,
+              this
+            );
+            this.notes.push(note);
+            delete this._noteOnEvents[rawEvent.noteNumber];
+          }
+          break;
+      }
     }
+
+    return event;
   }
 
-  removeEvent(event: Event){
+  removeEvent(event: Event<RawEvent>) {
     const index = this.events.lastIndexOf(event); // index will typically be near the end of the array
-    this.events.splice(index, 1)
+    this.events.splice(index, 1);
   }
 
   get index() {
@@ -64,13 +72,13 @@ export default class Track {
   }
 
   notesOnAt(second: number) {
-    return this.notes.filter(function(note){
+    return this.notes.filter(function (note) {
       return note.onAt(second);
     });
   }
 
   notesOnDuring(onSecond: number, offSecond: number) {
-    return this.notes.filter(function(note){
+    return this.notes.filter(function (note) {
       return note.onDuring(onSecond, offSecond);
     });
   }
