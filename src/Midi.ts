@@ -55,32 +55,20 @@ export default class Midi {
   }
 
   newCursor() {
-    return new Cursor(
-      this.events.sort(function (e1, e2) {
-        return e1.tick! - e2.tick!;
-      })
-    );
+    return new Cursor(this.events.sort((e1, e2) => e1.tick! - e2.tick!));
   }
 
   get notes() {
     return this.tracks
-      .map(function (track) {
-        return track.notes;
-      })
-      .reduce(function (a, b) {
-        return a.concat(b);
-      });
+      .map((track) => track.notes)
+      .reduce((a, b) => a.concat(b));
   }
 
   get events() {
     return this.tracks
-      .map(function (track) {
-        return track.events;
-      })
-      .reduce(function (a, b) {
-        return a.concat(b);
-      });
-    //.sort(function(e1,e2){return e1.tick < e2.tick});
+      .map((track) => track.events)
+      .reduce((a, b) => a.concat(b));
+    //.sort((e1,e2) => e1.tick < e2.tick);
   }
 
   get tempoEvents(): Event<SetTempoEvent>[] {
@@ -91,6 +79,7 @@ export default class Midi {
     ): event is Event<SetTempoEvent> {
       return event.raw.type === "meta" && event.raw.subtype === "setTempo";
     }
+
     // format 0: All events are on the zeroth track, including tempo events
     // format 1: All tempo events are on the zeroth track
     // format 2: Every track has tempo events (not supported)
