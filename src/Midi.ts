@@ -93,23 +93,36 @@ export default class Midi {
   }
 
   tickToSecond(tick: number) {
+    if (tick === 0) return 0;
     if (this._tickToSecond[tick]) return this._tickToSecond[tick];
 
-    var currentTick = 0;
-    var currentTempo = 500000;
-    var totalTime = 0;
-    for (var i = 0; i < this.tempoEvents.length; i++) {
-      var event = this.tempoEvents[i];
-      if (event.tick! >= tick) break;
-      totalTime +=
-        (((event.tick! - currentTick) / this.ppqn) * currentTempo) / 1000000.0;
-      currentTick = event.tick!;
-      currentTempo = event.raw.microsecondsPerBeat;
+    let mostRecentSetTempoEvent: Event<SetTempoEvent> = new Event(
+      {
+        type: "meta",
+        subtype: "setTempo",
+        deltaTime: 0,
+        microsecondsPerBeat: 500_000,
+      },
+      this.tracks[0],
+      0
+    );
+
+    for (let setTempoEvent of this.tempoEvents) {
+      if (setTempoEvent.tick < tick) {
+        mostRecentSetTempoEvent = setTempoEvent;
+      } else {
+        break;
+      }
     }
 
-    totalTime +=
-      (((tick - currentTick) / this.ppqn) * currentTempo) / 1000000.0;
-    return (this._tickToSecond[tick] = totalTime);
+    const totalSeconds =
+      mostRecentSetTempoEvent.second +
+      (((tick - mostRecentSetTempoEvent.tick) / this.ppqn) *
+        mostRecentSetTempoEvent.raw.microsecondsPerBeat) /
+        1_000_000.0;
+    this._tickToSecond[tick] = totalSeconds;
+
+    return totalSeconds;
   }
 
   notesOnAt(second: number): Note[] {
