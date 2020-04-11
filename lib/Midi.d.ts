@@ -2,6 +2,11 @@ import Track from "./Track";
 import Cursor from "./Cursor";
 import { RawEvent, SetTempoEvent, Event } from "./Event";
 import Note from "./Note";
+declare global {
+    interface Array<T> {
+        last(): T | undefined;
+    }
+}
 export default class Midi {
     format: number;
     ppqn: number;

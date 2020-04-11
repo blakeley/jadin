@@ -4,6 +4,16 @@ import Cursor from "./Cursor";
 import { RawEvent, SetTempoEvent, Event } from "./Event";
 import Note from "./Note";
 
+declare global {
+  interface Array<T> {
+    last(): T | undefined;
+  }
+}
+
+Array.prototype.last = function () {
+  return this[this.length - 1];
+};
+
 export default class Midi {
   format: number;
   ppqn: number;
@@ -88,13 +98,9 @@ export default class Midi {
   }
 
   get duration() {
-    return this.notes
-      .map(function (note) {
-        return note.offSecond;
-      })
-      .reduce(function (a, b) {
-        return Math.max(a!, b!);
-      }, 0);
+    return Math.max(
+      ...this.tracks.map((track) => track.notes.last()?.offSecond || 0)
+    );
   }
 
   tickToSecond(tick: number) {
