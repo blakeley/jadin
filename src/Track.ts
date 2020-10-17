@@ -1,6 +1,12 @@
 import MidiReader from "./MidiReader";
 import Note from "./Note";
-import { Event, RawEvent, NoteOnEvent, NoteOffEvent } from "./Event";
+import {
+  Event,
+  RawEvent,
+  NoteOnEvent,
+  NoteOffEvent,
+  InstrumentNameEvent,
+} from "./Event";
 import Midi from "./Midi";
 
 export default class Track {
@@ -8,6 +14,7 @@ export default class Track {
   notes: Note[];
   _noteOnEvents: { [key: number]: Event<NoteOnEvent> };
   midi!: Midi;
+  patch: number | null = null;
 
   constructor(data = "") {
     this.events = [];
@@ -56,6 +63,9 @@ export default class Track {
             delete this._noteOnEvents[rawEvent.noteNumber];
           }
           break;
+        case "programChange":
+          this.patch = rawEvent.value;
+          break;
       }
     }
 
@@ -81,5 +91,12 @@ export default class Track {
     return this.notes.filter(function (note) {
       return note.onDuring(onSecond, offSecond);
     });
+  }
+
+  get instrumentName() {
+    return this.events.find(
+      (event): event is Event<InstrumentNameEvent> =>
+        event.raw.type === "meta" && event.raw.subtype === "instrumentName"
+    )?.raw.text;
   }
 }

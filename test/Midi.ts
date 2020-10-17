@@ -3,23 +3,27 @@ import { expect } from "chai";
 import * as fs from "fs";
 import Cursor from "../src/Cursor";
 
-const cScaleData = fs.readFileSync("./fixtures/c.mid", "binary");
-const cScaleMidi = new Midi(cScaleData);
+const cScaleBinaryString = fs.readFileSync("./fixtures/c.mid", "binary");
+const cScaleMidi = new Midi(cScaleBinaryString);
 
 describe("Midi", function () {
-  it("#constructor should construct a Midi instance given binary data", function () {
-    expect(cScaleMidi).to.not.be.null;
-  });
+  describe("#constructor", () => {
+    it("constructs a Midi instance given an array buffer", () => {});
 
-  it("#constructor should construct a default Midi instance given no arguments", function () {
-    const defaultMidi = new Midi();
-    expect(defaultMidi).to.not.be.null;
-    expect(defaultMidi.format).to.equal(0);
-    expect(defaultMidi.ppqn).to.equal(480);
-    expect(defaultMidi.notes).to.not.be.null;
-    expect(defaultMidi.notesOnAt(0)).to.not.be.null;
-    expect(defaultMidi.duration).to.equal(0);
-    expect(defaultMidi.tickToSecond(960)).to.equal(1);
+    it("constructs a Midi instance given a binary string", function () {
+      expect(cScaleMidi).to.not.be.null;
+    });
+
+    it("constructs a default Midi instance given no arguments", function () {
+      const defaultMidi = new Midi();
+      expect(defaultMidi).to.not.be.null;
+      expect(defaultMidi.format).to.equal(0);
+      expect(defaultMidi.ppqn).to.equal(480);
+      expect(defaultMidi.notes).to.not.be.null;
+      expect(defaultMidi.notesOnAt(0)).to.not.be.null;
+      expect(defaultMidi.duration).to.equal(0);
+      expect(defaultMidi.tickToSecond(960)).to.equal(1);
+    });
   });
 
   it("#format should return the MIDI format", function () {

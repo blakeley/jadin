@@ -8,10 +8,12 @@ export default class Track {
         [key: number]: Event<NoteOnEvent>;
     };
     midi: Midi;
+    patch: number | null;
     constructor(data?: string);
     addEvent(rawEvent: RawEvent, tick: number): Event;
     removeEvent(event: Event<RawEvent>): void;
     get index(): number;
     notesOnAt(second: number): Note[];
     notesOnDuring(onSecond: number, offSecond: number): Note[];
+    get instrumentName(): string | undefined;
 }

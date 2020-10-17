@@ -154,6 +154,22 @@ describe("Track", function () {
     );
   });
 
+  it("#addEvent should set the patch value", () => {
+    const track = new Track();
+    track.addEvent(
+      {
+        deltaTime: 0,
+        type: "channel",
+        channel: 0,
+        subtype: "programChange",
+        value: 8,
+      },
+      0
+    );
+
+    expect(track.patch).to.equal(8);
+  });
+
   it("#removeEvent should remove the given event from the events array", function () {
     const track = new Track();
     track.addEvent({ ...rawEvent }, 1);
